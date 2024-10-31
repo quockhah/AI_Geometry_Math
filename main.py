@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox, scrolledtext
 from PIL import Image, ImageTk
 from MainMenuFrame  import*
 from GeometrySolverFrame import*
-from SquareCalculatorFrame import*
 from TriangleCalculatorFrame import*
 
 class MainApplication:
