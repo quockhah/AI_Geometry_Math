@@ -12,14 +12,13 @@ class BaseCalculatorFrame(tk.Frame):
         header_frame = tk.Frame(self, bg="#F0F8FF")
         header_frame.pack(fill="x", pady=10)
         
-        # Back button
-        back_btn = tk.Button(header_frame,
-                           text="↩ Quay lại",
-                           command=lambda: controller.show_frame(MainMenuFrame),
-                           font=("Arial", 12),
-                           bg="#FF99CC",
-                           fg="white")
-        back_btn.pack(side="left", padx=10)
+        back_button = tk.Button(self,
+                              text="↩ Quay lại Menu chính",
+                              font=("Arial", 12),
+                              command=lambda: controller.back_main(parent),
+                              bg="#FF99CC",
+                              fg="white")
+        back_button.pack(side="left", padx=10)
         
         # AI Solver button
         ai_btn = tk.Button(header_frame,

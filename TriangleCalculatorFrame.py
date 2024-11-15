@@ -98,12 +98,12 @@ class RectangleCalculatorFrame(BaseCalculatorFrame):
         
         tk.Label(self, 
                 text="▭ Tính toán Hình Chữ Nhật",
-                font=("Comic Sans MS", 20, "bold"),
+                font=("Comic Sans MS", 30, "bold"),
                 bg="#F0F8FF").pack(pady=10)
         
         # Draw rectangle
         self.canvas.create_rectangle(50, 50, 350, 200, width=2)
-        self.canvas.create_text(200, 30, text="Chiều dài (d)",
+        self.canvas.create_text(200,15, text="Chiều dài (d)",
                               font=("Arial", 10))
         self.canvas.create_text(30, 125, text="Chiều rộng (r)",
                               font=("Arial", 10))
@@ -123,6 +123,24 @@ class RectangleCalculatorFrame(BaseCalculatorFrame):
                 font=("Arial", 11), bg="#F0F8FF").grid(row=1, column=0, padx=5, pady=5)
         self.width_entry = tk.Entry(input_frame, font=("Arial", 11))
         self.width_entry.grid(row=1, column=1, padx=5, pady=5)
+        
+                # Calculate button
+        tk.Button(input_frame,
+                 text="Tính toán",
+                 command=self.calculate,
+                 font=("Arial", 11),
+                 bg="#4CAF50",
+                 fg="white").grid(row=3, column=0, columnspan=2, pady=10)
+        
+        # Result frame
+        self.result_frame = tk.LabelFrame(self, text="Kết quả",
+                                        font=("Arial", 12, "bold"),
+                                        bg="#F0F8FF")
+        self.result_frame.pack(pady=20, padx=20, fill="x")
+        
+        self.result_text = tk.Text(self.result_frame, height=6,
+                                 font=("Arial", 11), wrap=tk.WORD)
+        self.result_text.pack(pady=10, padx=10, fill="x")
     def calculate(self):
         try:
             length = float(self.length_entry.get())
@@ -141,6 +159,8 @@ class RectangleCalculatorFrame(BaseCalculatorFrame):
 
     def switch_to_ai_solver(self):
         self.controller.show_geometry_solver("rectangle")
+
+        
 class SquareCalculatorFrame(BaseCalculatorFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -152,7 +172,7 @@ class SquareCalculatorFrame(BaseCalculatorFrame):
         
         # Draw square
         self.canvas.create_rectangle(100, 50, 300, 250, width=2)
-        self.canvas.create_text(200, 30, text="a", font=("Arial", 12))
+        self.text_a = self.canvas.create_text(200, 30, text="a", font=("Arial", 12))
         
         # Input frame
         input_frame = tk.LabelFrame(self, text="Nhập số liệu",
@@ -164,7 +184,8 @@ class SquareCalculatorFrame(BaseCalculatorFrame):
                 font=("Arial", 11), bg="#F0F8FF").grid(row=0, column=0, padx=5, pady=5)
         self.side_entry = tk.Entry(input_frame, font=("Arial", 11))
         self.side_entry.grid(row=0, column=1, padx=5, pady=5)
-        
+        self.side_entry.bind("<KeyRelease>", self.update_canvas)
+
         # Calculate button
         tk.Button(input_frame,
                  text="Tính toán",
@@ -182,7 +203,12 @@ class SquareCalculatorFrame(BaseCalculatorFrame):
         self.result_text = tk.Text(self.result_frame, height=4,
                                  font=("Arial", 11), wrap=tk.WORD)
         self.result_text.pack(pady=10, padx=10, fill="x")
-    
+    def update_canvas(self, event): 
+        try: 
+            a = float(self.side_entry.get()) 
+            self.canvas.itemconfig(self.text_a, fill="red") # Thay đổi màu văn bản thành đỏ khi nhập giá trị 
+        except ValueError: 
+            self.canvas.itemconfig(self.text_a, fill="black")
     def calculate(self):
         try:
             side = float(self.side_entry.get())

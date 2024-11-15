@@ -190,10 +190,8 @@ class GeometrySolverFrame(tk.Frame):
             self.canvas.create_text(370, 250, text="C",
                                   font=("Arial", 12, "bold"))
         elif shape == "square":
-            self.canvas.create_rectangle(100, 100, 300, 300, width=2)
-            # Thêm nhãn cạnh
-            self.canvas.create_text(200, 80, text="a",
-                                  font=("Arial", 12))
+            self.canvas.create_rectangle(100, 50, 300, 250, width=2)
+            self.canvas.create_text(200, 30, text="a", font=("Arial", 12))
             
     def analyze_problem(self):
         problem_text = self.problem_text.get("1.0", "end-1c")
@@ -283,3 +281,4 @@ class GeometrySolverFrame(tk.Frame):
     def show_frame(self, frame_class):
         frame = self.frames[frame_class]
         frame.tkraise()
+    
