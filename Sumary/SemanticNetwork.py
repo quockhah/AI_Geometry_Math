@@ -1,15 +1,3 @@
-class Node:
-    def __init__(self, concept):
-        self.concept = concept.lower() 
-        self.relationships = [] 
-
-    def add_relationship(self, relation, target_node):
-        self.relationships.append((relation, target_node))
-
-    def get_relationships(self):
-        
-        return self.relationships
-    
 class SemanticNetwork:
     def __init__(self):
         self.nodes = []
@@ -44,6 +32,7 @@ class SemanticNetwork:
             return info
         else:
             return f"Không tìm thấy khái niệm: {concept}"
+        
     def search_by_relationship(self, concept, relation):
         node = self.find_node(concept)
         if node:
@@ -60,6 +49,7 @@ class SemanticNetwork:
             return info
         else:
             return f"Không tìm thấy khái niệm: {concept}"
+        
     def inherited_knowledge_with_relationship(self, node,mainnode):
         inherited_results =""
         for rel, target in node.get_relationships():
@@ -67,11 +57,13 @@ class SemanticNetwork:
                 node1=Node(target.concept)
                 inherited_results += self.inherited_knowledge_with_relationship(node1,mainnode)
         return inherited_results
+    
     def load_data(self, file_name):
         with open(file_name, "r", encoding="utf-8") as file:
             for line in file:
                 concept1, relation, concept2 = line.strip().split(";")
                 self.add_relationship(concept1, relation, concept2)
+
     def is_node(self, concept):
         return self.find_node(concept) is not None
 
@@ -80,9 +72,5 @@ class SemanticNetwork:
         if node is not None:
             return any(rel == relation for rel, _ in node.relationships)
         return False
-    
-class Analytic:
-    def __init__(self,graph) -> None:
-        self.graph=graph
 
     
