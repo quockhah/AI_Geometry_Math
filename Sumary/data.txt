@@ -1,0 +1,13 @@
+Cây bàng;là;Cây
+cây;có;lá
+cây;có;rễ
+cây;thực hiện;chức năng
+chức năng;thực hiện;quang hợp
+chức năng;thực hiện;tổng hợp chất dinh dưỡng
+chức năng;thực hiện;tạo oxi
+lá;có;màu
+lá;có;hình dạng
+màu;khi héo;vàng
+màu;khi bình thường;xanh
+xe bus; màu;vàng
+xe bus;đón;khách

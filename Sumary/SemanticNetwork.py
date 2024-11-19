@@ -1,4 +1,4 @@
-import Node
+from Node import Node
 
 class SemanticNetwork:
     def __init__(self):
