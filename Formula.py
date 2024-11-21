@@ -129,7 +129,7 @@ def Formula_4(self, changes):
     if self.S and self.p and self.b and self.c and not self.a:
         a_solved = self.p - self.b - self.c
         self.a = math.sqrt(2 * self.S / a_solved)
-        self.loigiai.append([21, f'Tính cạnh a:\nsqrt((2*{self.S}/({self.p}-{self.b}-{self.c}))={round(self.a)}'])
+        self.loigiai.append([21, f'Tính cạnh a:\nsqrt((2*{round(self.S)}/({round(self.p)}-{round(self.b)}-{round(self.c)}))={round(self.a)}'])
         self.Gia_tri_tinh.append([21, "a"])
         changes = True
 
