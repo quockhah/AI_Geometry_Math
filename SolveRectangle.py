@@ -1,119 +1,145 @@
 import math
 from typing import Dict, List, Callable
 
+
 class GeometryFormula:
+    """
+    Lớp đại diện cho một công thức hình học.
+
+    Attributes:
+        inputs (List[str]): Danh sách các biến đầu vào của công thức.
+        output (str): Biến đầu ra của công thức.
+        formula (Callable): Hàm thực thi công thức.
+        explanation (str): Giải thích cách công thức hoạt động.
+    """
     def __init__(self, inputs: List[str], output: str, formula: Callable, explanation: str):
         self.inputs = inputs
         self.output = output
         self.formula = formula
         self.explanation = explanation
 
+
 class HinhChuNhat:
+    """
+    Lớp đại diện cho hình chữ nhật và các tính toán liên quan.
+
+    Attributes:
+        length (float): Chiều dài của hình chữ nhật.
+        width (float): Chiều rộng của hình chữ nhật.
+        diagonal (float): Đường chéo của hình chữ nhật.
+        area (float): Diện tích của hình chữ nhật.
+        perimeter (float): Chu vi của hình chữ nhật.
+    """
     def __init__(self, **kwargs):
-        # Khởi tạo các giá trị đã biết
-        self.a = kwargs.get('a')  # Chiều dài
-        self.b = kwargs.get('b')  # Chiều rộng
-        self.d = kwargs.get('d')  # Đường chéo
-        self.S = kwargs.get('S')  # Diện tích
-        self.P = kwargs.get('P')  # Chu vi
-        self.alpha = kwargs.get('alpha')  # Góc giữa đường chéo và cạnh (đơn vị độ)
-        
-        # Chuyển đổi góc từ độ sang radian nếu có
-        if self.alpha is not None:
-            self.alpha = math.radians(self.alpha)
-        
+        """
+        Khởi tạo các thuộc tính của hình chữ nhật dựa trên đầu vào.
+
+        Args:
+            kwargs: Các giá trị đầu vào như chiều dài, chiều rộng, đường chéo, diện tích, chu vi, ...
+        """
+        self.length = kwargs.get('length', None)  # Chiều dài hình chữ nhật
+        self.width = kwargs.get('width', None)  # Chiều rộng hình chữ nhật
+        self.diagonal = kwargs.get('diagonal', None)  # Đường chéo
+        self.area = kwargs.get('area', None)  # Diện tích
+        self.perimeter = kwargs.get('perimeter', None)  # Chu vi
+
         # Lưu trữ các bước giải và công thức đã dùng
         self.steps = []
         self.used_formulas = []
-        
+
         # Định nghĩa mạng công thức
         self.formulas = [
             GeometryFormula(
-                inputs=['a', 'b'],
-                output='S',
-                formula=lambda a, b: a * b,
-                explanation="Diện tích hình chữ nhật bằng tích chiều dài và chiều rộng: S = a × b"
+                inputs=['length', 'width'],
+                output='area',
+                formula=lambda length, width: length * width,
+                explanation="Diện tích hình chữ nhật bằng chiều dài nhân chiều rộng: S = a * b"
             ),
             GeometryFormula(
-                inputs=['S', 'a'],
-                output='b',
-                formula=lambda S, a: S / a,
-                explanation="Chiều rộng bằng diện tích chia chiều dài: b = S/a"
+                inputs=['area'],
+                output='length',
+                formula=lambda area, width: area / width,
+                explanation="Chiều dài hình chữ nhật bằng diện tích chia cho chiều rộng: a = S / b"
             ),
             GeometryFormula(
-                inputs=['S', 'b'],
-                output='a',
-                formula=lambda S, b: S / b,
-                explanation="Chiều dài bằng diện tích chia chiều rộng: a = S/b"
+                inputs=['area'],
+                output='width',
+                formula=lambda area, length: area / length,
+                explanation="Chiều rộng hình chữ nhật bằng diện tích chia cho chiều dài: b = S / a"
             ),
             GeometryFormula(
-                inputs=['a', 'b'],
-                output='P',
-                formula=lambda a, b: 2 * (a + b),
+                inputs=['length', 'width'],
+                output='perimeter',
+                formula=lambda length, width: 2 * (length + width),
                 explanation="Chu vi hình chữ nhật bằng 2 lần tổng chiều dài và chiều rộng: P = 2(a + b)"
             ),
             GeometryFormula(
-                inputs=['P', 'a'],
-                output='b',
-                formula=lambda P, a: (P - 2*a) / 2,
-                explanation="Chiều rộng tính từ chu vi và chiều dài: b = (P - 2a)/2"
+                inputs=['perimeter'],
+                output='length',
+                formula=lambda perimeter, width: (perimeter / 2) - width,
+                explanation="Chiều dài hình chữ nhật bằng chu vi chia 2 trừ chiều rộng: a = (P / 2) - b"
             ),
             GeometryFormula(
-                inputs=['a', 'b'],
-                output='d',
-                formula=lambda a, b: math.sqrt(a**2 + b**2),
-                explanation="Đường chéo tính theo định lý Pytago: d = √(a² + b²)"
+                inputs=['perimeter'],
+                output='width',
+                formula=lambda perimeter, length: (perimeter / 2) - length,
+                explanation="Chiều rộng hình chữ nhật bằng chu vi chia 2 trừ chiều dài: b = (P / 2) - a"
             ),
             GeometryFormula(
-                inputs=['a', 'b'],
-                output='alpha',
-                formula=lambda a, b: math.atan(b/a),
-                explanation="Góc giữa đường chéo và cạnh dài: α = arctang(b/a)"
+                inputs=['length', 'width'],
+                output='diagonal',
+                formula=lambda length, width: math.sqrt(length ** 2 + width ** 2),
+                explanation="Đường chéo hình chữ nhật bằng căn bậc hai của tổng bình phương chiều dài và chiều rộng: d = √(a² + b²)"
             ),
             GeometryFormula(
-                inputs=['d', 'alpha'],
-                output='a',
-                formula=lambda d, alpha: d * math.cos(alpha),
-                explanation="Chiều dài tính từ đường chéo và góc: a = d×cos(α)"
+                inputs=['diagonal', 'length'],
+                output='width',
+                formula=lambda diagonal, length: math.sqrt(diagonal ** 2 - length ** 2),
+                explanation="Chiều rộng hình chữ nhật bằng căn bậc hai của đường chéo bình phương trừ chiều dài bình phương: b = √(d² - a²)"
             ),
             GeometryFormula(
-                inputs=['d', 'alpha'],
-                output='b',
-                formula=lambda d, alpha: d * math.sin(alpha),
-                explanation="Chiều rộng tính từ đường chéo và góc: b = d×sin(α)"
-            )
+                inputs=['diagonal', 'width'],
+                output='length',
+                formula=lambda diagonal, width: math.sqrt(diagonal ** 2 - width ** 2),
+                explanation="Chiều dài hình chữ nhật bằng căn bậc hai của đường chéo bình phương trừ chiều rộng bình phương: a = √(d² - b²)"
+            ),
         ]
 
-    def check_validity(self) -> bool:
-        # Kiểm tra tính hợp lệ của các dữ liệu đầu vào
-        if self.a is not None and self.b is not None:
-            if self.a <= 0 or self.b <= 0:
-                raise ValueError("Chiều dài và chiều rộng phải là số dương.")
-            if self.d is not None and not math.isclose(self.d, math.sqrt(self.a**2 + self.b**2), abs_tol=1e-5):
-                raise ValueError("Đường chéo không hợp lệ với chiều dài và chiều rộng.")
-            if self.alpha is not None and (self.alpha < 0 or self.alpha > math.pi / 2):
-                raise ValueError("Góc alpha phải nằm trong khoảng từ 0° đến 90°.")
-        return True
+        self.validate_inputs()
+
+    def validate_inputs(self):
+        """
+        Kiểm tra các mối quan hệ hình học giữa các giá trị đầu vào.
+
+        Raises:
+            ValueError: Nếu các giá trị không thỏa mãn quan hệ hình học.
+        """
+        if self.length and self.width and self.diagonal and not math.isclose(self.diagonal, math.sqrt(self.length ** 2 + self.width ** 2), rel_tol=1e-5):
+            raise ValueError("Giá trị diagonal không phù hợp với length và width theo công thức d = √(a² + b²)")
+        if self.length and self.perimeter and not math.isclose(self.perimeter, 2 * (self.length + self.width), rel_tol=1e-5):
+            raise ValueError("Giá trị perimeter không phù hợp với length và width theo công thức P = 2(a + b)")
+        if self.length and self.area and not math.isclose(self.area, self.length * self.width, rel_tol=1e-5):
+            raise ValueError("Giá trị area không phù hợp với length và width theo công thức S = a * b")
 
     def solve(self) -> Dict[str, float]:
-        if not self.check_validity():
-            return {}
+        """
+        Tự động tính toán các giá trị chưa biết dựa trên các giá trị đầu vào.
 
+        Returns:
+            Dict[str, float]: Kết quả của các thuộc tính (chiều dài, chiều rộng, đường chéo, diện tích, chu vi).
+        """
         while True:
             found_new = False
-            
-            # Duyệt qua tất cả công thức
+
             for formula in self.formulas:
-                # Kiểm tra xem có đủ dữ liệu đầu vào cho công thức không
+                # Kiểm tra nếu tất cả các biến đầu vào đã biết
                 if all(hasattr(self, inp) and getattr(self, inp) is not None for inp in formula.inputs):
-                    # Kiểm tra xem kết quả đã được tính chưa
+                    # Nếu biến đầu ra chưa được tính
                     if not hasattr(self, formula.output) or getattr(self, formula.output) is None:
-                        # Tính giá trị mới
                         inputs = [getattr(self, inp) for inp in formula.inputs]
                         result = formula.formula(*inputs)
                         setattr(self, formula.output, result)
-                        
-                        # Lưu bước giải
+
                         step = {
                             'formula': formula.explanation,
                             'inputs': {inp: getattr(self, inp) for inp in formula.inputs},
@@ -122,65 +148,98 @@ class HinhChuNhat:
                         self.steps.append(step)
                         self.used_formulas.append(formula)
                         found_new = True
-            
+
             if not found_new:
                 break
-        
+
         return self.get_results()
 
-    def get_results(self) -> Dict[str, float]:
-        results = {
-            'a': f"{round(self.a, 2)} cm" if self.a is not None else None,
-            'b': f"{round(self.b, 2)} cm" if self.b is not None else None,
-            'd': f"{round(self.d, 2)} cm" if self.d is not None else None,
-            'S': f"{round(self.S, 2)} cm²" if self.S is not None else None,
-            'P': f"{round(self.P, 2)} cm" if self.P is not None else None,
-            'alpha': f"{round(math.degrees(self.alpha), 2)}°" if self.alpha is not None else None
+    def get_results(self) -> Dict[str, str]:
+        """
+        Lấy kết quả cuối cùng với đơn vị đo.
+
+        Returns:
+            Dict[str, str]: Kết quả định dạng với đơn vị.
+        """
+        unit = "cm"  # Có thể thay đổi đơn vị nếu cần
+        return {
+            'length': f"{round(self.length, 2)} {unit}" if self.length is not None else None,
+            'width': f"{round(self.width, 2)} {unit}" if self.width is not None else None,
+            'diagonal': f"{round(self.diagonal, 2)} {unit}" if self.diagonal is not None else None,
+            'area': f"{round(self.area, 2)} {unit}²" if self.area is not None else None,
+            'perimeter': f"{round(self.perimeter, 2)} {unit}" if self.perimeter is not None else None
         }
-        return results
-    
+
     def get_solution_steps(self) -> str:
+        """
+        Trả về các bước giải chi tiết.
+
+        Returns:
+            str: Các bước giải chi tiết dưới dạng chuỗi.
+        """
         solution = "Lời giải chi tiết:\n\n"
         for i, step in enumerate(self.steps, 1):
             solution += f"Bước {i}:\n"
             solution += f"Công thức: {step['formula']}\n"
             solution += "Thay số:\n"
             
-            # Thay số cho các biến đầu vào
+            # Sửa phần tên biến đầu vào
             for var, val in step['inputs'].items():
-                if var == 'alpha':
-                    solution += f"{var} = {math.degrees(val):.2f}°\n"
-                else:
-                    solution += f"{var} = {val:.2f} cm\n"
+                if var == "length":
+                    var = "chiều dài"
+                elif var == "width":
+                    var = "chiều rộng"
+                elif var == "area":
+                    var = "diện tích"
+                elif var == "perimeter":
+                    var = "chu vi"
+                elif var == "diagonal":
+                    var = "đường chéo"
+                
+                solution += f"{var} = {val:.2f} cm\n"
             
-            # Thay số cho kết quả
+            # Sửa phần tên biến đầu ra
             for var, val in step['output'].items():
-                if var == 'alpha':
-                    solution += f"=> {var} = {math.degrees(val):.2f}°\n"
-                else:
-                    solution += f"=> {var} = {val:.2f} cm\n"
+                if var == "length":
+                    var = "chiều dài"
+                elif var == "width":
+                    var = "chiều rộng"
+                elif var == "area":
+                    var = "diện tích"
+                elif var == "perimeter":
+                    var = "chu vi"
+                elif var == "diagonal":
+                    var = "đường chéo"
+                
+                solution += f"=> {var} = {val:.2f} cm\n"
             
             solution += "\n"
         
         return solution
 
-
-# Ví dụ sử dụng:
 if __name__ == "__main__":
     try:
-        # Giải bài toán hình chữ nhật hợp lệ
-        rectangle = HinhChuNhat(a=6, b=8)
-        results = rectangle.solve()
-        print("\nKết quả hình chữ nhật:")
-        print(results)
-        print("\nLời giải hình chữ nhật:")
-        print(rectangle.get_solution_steps())
-
-        # Giải bài toán với dữ liệu không hợp lệ
-        invalid_rectangle = HinhChuNhat(a=6, b=8, d=20)  # Đường chéo không hợp lệ
-        results_invalid = invalid_rectangle.solve()
-        print("\nKết quả hình chữ nhật không hợp lệ:")
+        # Trường hợp 1: Dữ liệu không hợp lệ
+        print("Trường hợp 1: Dữ liệu không hợp lệ (diagonal = 13 không hợp lệ với length = 5 và width = 4)")
+        rectangle_invalid = HinhChuNhat(length=5, width=4, diagonal=13)  # Giá trị diagonal không hợp lệ
+        results_invalid = rectangle_invalid.solve()
+        print("Kết quả hình chữ nhật (không hợp lệ):")
         print(results_invalid)
-    
+        print("\nLời giải hình chữ nhật (không hợp lệ):")
+        print(rectangle_invalid.get_solution_steps())
+
+    except ValueError as e:
+        print("Lỗi:", e)
+
+    try:
+        # Trường hợp 2: Dữ liệu hợp lệ
+        print("\nTrường hợp 2: Dữ liệu hợp lệ (length = 5, width = 4)")
+        rectangle_valid = HinhChuNhat(length=5, width=4)  # Dữ liệu hợp lệ
+        results_valid = rectangle_valid.solve()
+        print("Kết quả hình chữ nhật (hợp lệ):")
+        print(results_valid)
+        print("\nLời giải hình chữ nhật (hợp lệ):")
+        print(rectangle_valid.get_solution_steps())
+
     except ValueError as e:
         print("Lỗi:", e)
