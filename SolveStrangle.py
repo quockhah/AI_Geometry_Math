@@ -17,17 +17,21 @@ class GiaiTamGiac:
         self.p = kwargs.get('p')
         self.r = kwargs.get('r')
         self.hc = kwargs.get('hc')
-        self.validStrangleData = [[self.alpha,self.b,self.c],[self.beta,self.a,self.c],[self.delta,self.b,self.a]]
+        self.validStrangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
         self.Gia_tri_tinh = []
-        self.soct=[]
-        self.yt=[]
-        self.ytbd=[]
-        self.ytt=[]
+        self.cong_thuc=[]
+        self.yeu_to=[]
+        self.yeu_to_them=[]
+        self.yeu_to_bd=[]
+        self.yeu_tot=[]
         self.loigiai=[]
         for key, value in kwargs.items():
             
             if value is not None:
-                self.ytbd.append(key)
+                self.yeu_to_them.append(key)
+                self.yeu_to_bd.append(key)
+
+
 
     def choose_valid(self):
         isValue=None
@@ -46,21 +50,21 @@ class GiaiTamGiac:
         # Kiểm tra định lý bất đẳng thức tam giác
         edges=[self.a,self.b,self.c]
         data=self.choose_valid()
-        edge=[i for i in edges if i not in data]
         corner=data[0]
         edge_1=data[1]
         edge_2=data[2]
-        edge_3=edge[0]
+        edge_3=data[3]
         result=False
         if self.a and self.b and self.c:
             if self.a + self.b > self.c and self.a + self.c > self.b and self.b + self.c > self.a:
                 # Kiểm tra xem tổng các góc có bằng 180 độ (π radians) không
                 if round(math.pow(edge_3,2))==round(math.pow(edge_1,2)+math.pow(edge_2,2)-2*edge_1*edge_2*math.cos(corner)):
                     result= True
+                else:
+                     print("Các độ dài cạnh không được cung cấp hoặc không hợp lệ.")
             else:
                 print("Các cạnh không thỏa mãn định lý bất đẳng thức tam giác.")
                 result= False
-        print("Các độ dài cạnh không được cung cấp hoặc không hợp lệ.")
         if result==False:
             print("Invalid triangle. Exiting program.")
             exit()
@@ -75,74 +79,9 @@ class GiaiTamGiac:
             changes = Formula.Formula_4(self, changes)
             changes = Formula.Formula_5(self, changes)
             changes = Formula.Formula_6(self, changes)
-
-
-
-            # Công thức 2: Tính góc còn thiếu nếu đã biết hai góc
-            # Công thức 1: Định lý Sin để tính cạnh khi biết hai góc và một cạnh khác
-            #alpha/beta/b     a=?
-            
-
-            
-
-            # Công thức 3: Tính nửa chu vi p nếu đã biết tất cả các cạnh
-           
-
-
-
-            # Công thức 5: Tính chiều cao hc nếu biết diện tích S và cạnh c
-           
-
-            # Công thức 6: Tính bán kính đường tròn ngoại tiếp R nếu biết diện tích S và tất cả các cạnh
-            if self.S and self.a and self.b and self.c and not self.R:
-                self.R = (self.a * self.b * self.c) / (4 * self.S)
-                print("Tính bán kính đường tròn ngoại tiếp R: R =", self.R)
-                self.Gia_tri_tinh.append([27,"R"])
-                changes = True
-            if self.R and self.a and self.b and self.c and not self.S:
-                self.S = (self.a * self.b * self.c) / (4 * self.R)
-                print("Tính diện tích tam giác S: S =", self.S)
-                self.Gia_tri_tinh.append([28,"S"])
-                changes = True
-
-            if self.S and self.R and self.a and self.b and not self.c:
-                self.c = (4 * self.S * self.R) / (self.a * self.b)
-                print("Tính cạnh c: c =", self.c)
-                self.Gia_tri_tinh.append([29,"c"])
-                changes = True
-
-            if self.S and self.R and self.a and self.c and not self.b:
-                self.b = (4 * self.S * self.R) / (self.a * self.c)
-                print("Tính cạnh b: b =", self.b)
-                self.Gia_tri_tinh.append([30,"b"])
-                changes = True
-            if self.S and self.R and self.b and self.c and not self.a:
-                self.a = (4 * self.S * self.R) / (self.b * self.c)
-                print("Tính cạnh a: a =", self.a)
-                self.Gia_tri_tinh.append([31,"a"])
-                changes = True
-
-            # Công thức 7: Tính bán kính đường tròn nội tiếp r nếu biết p và S
-            if self.S and self.p and not self.r:
-                self.r = self.S / self.p
-                print("Tính bán kính đường tròn nội tiếp r: r =", self.r)
-                self.Gia_tri_tinh.append([32,"r"])
-                changes = True
-            if self.r and self.p and not self.S:
-                self.S = self.r * self.p
-                print("Tính diện tích tam giác S: S =", self.S)
-                self.Gia_tri_tinh.append([33,"S"])
-                changes = True
-
-            if self.S and self.r and not self.p:
-                self.p = self.S / self.r
-                print("Tính nửa chu vi p: p =", self.p)
-                self.Gia_tri_tinh.append([34,"p"])
-                changes = True
-
-            # Nếu không có thay đổi nào xảy ra, dừng vòng lặp
+            changes = Formula.Formula_7(self, changes)
             if not changes:
-                self.validStrangleData = [[self.alpha,self.b,self.c],[self.beta,self.a,self.c],[self.delta,self.b,self.a]]
+                self.validStrangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
                 break
     def parse_input(text):
         pattern = r'(\w+)\s*=\s*([\d.]+)(?!\?)'
@@ -154,186 +93,65 @@ class GiaiTamGiac:
         return data
     def process_text(text):
         matches = re.findall(r'(\w+)=\?', text)
-        a = matches[0] if matches else None
-        return a
-    # def ket_qua(self, fields=None):
-    # # Trả về tất cả các giá trị đã tính, làm tròn các giá trị thành số chẵn nhất
-    #     def round_even(value):
-    #         if value is not None:
-    #             return round(value)
-    #         return None
-        
-    #     # Các giá trị cần tính toán
-    #     results = {
-    #         'alpha (độ)': round_even(math.degrees(self.alpha)) if self.alpha else None,
-    #         'beta (độ)': round_even(math.degrees(self.beta)) if self.beta else None,
-    #         'delta (độ)': round_even(math.degrees(self.delta)) if self.delta else None,
-    #         'a': round_even(self.a) if self.a else None,
-    #         'b': round_even(self.b) if self.b else None,
-    #         'c': self.c if self.c else None,
-    #         'nửa chu vi (p)': round_even(self.p) if self.p else None,
-    #         'diện tích (S)': round_even(self.S) if self.S else None,
-    #         'bán kính đường tròn ngoại tiếp (R)': round_even(self.R) if self.R else None,
-    #         'bán kính đường tròn nội tiếp (r)': round_even(self.r) if self.r else None,
-    #         'chiều cao với cạnh c (hc)': round_even(self.hc) if self.hc else None
-    #     }
-        
-    #     # Nếu không có tham số `fields`, trả về tất cả các kết quả
-    #     if fields is None:
-    #         return results
-        
-    #     # Trả về chỉ các giá trị được yêu cầu
-    #     return {key: value for key, value in results.items() if key in fields}
+        data = matches[0] if matches else None
+        return data
             
     def kt1(self, giatri):
         for dong in self.Gia_tri_tinh:
-            if dong[1] == giatri and dong[0] not in self.soct: 
-                self.soct.append(dong[0])
+            if dong[1] == giatri and dong[0] not in self.cong_thuc: 
+                self.cong_thuc.append(dong[0])
+        self.cong_thuc.sort()
     def LoiGiai(self):
-        A = [[1, "alpha", "beta", "delta"], [3, "delta", "alpha", "beta"],[5,"b","a", "beta", "alpha"],[6,"b","a", "delta", "alpha"],[6,"c","a", "delta", "alpha"]
-            ,[12,"delta","a", "c", "alpha"],[14,"beta","b", "a", "alpha"],[16,"p","a", "b", "c"],[19,"a","p","b", "c"],[20,"S""p", "c", "b", "a"]]
+        A = [[1,'alpha', 'beta', 'delta'], [2,'beta','alpha','delta'], [3, 'delta', 'alpha', 'beta'], [4,'a','b','alpha','beta'], [5,'b','a', 'beta', 'alpha']
+            ,[6,'c','a', 'delta', 'alpha'], [7,'a','c', 'delta', 'alpha'], [8,'b','c','beta','delta'], [9,'c','b','beta','detal'], [10,'alpha','a','beta','b']
+            ,[11,'beta','b','delta','c'], [12,'delta','a', 'c', 'alpha'], [13,'alpha','a','delta','c'], [14,'beta','b', 'a', 'alpha'], [15,'delta','c','beta','b']
+            ,[16,'p','a', 'b', 'c'], [17,'c','p','a','b'], [18,'b','p','a','c'], [19,'a','p','b', 'c'], [20,'S','p', 'c', 'b', 'a'], [21,'a','p', 'c', 'b', 'S']
+            ,[22,'b','p', 'c', 'a', 'S'], [23,'c','p', 'b', 'a', 'S'], [24,'hc','S','c'], [25,'S','hc','c'], [26,'c','hc','S'], [27,'R','a','b','c','S']
+            ,[28,'S','a','b','c','R'], [29,'c','a','b','S','R'], [30,'b','a','c','S','R'], [31,'a','b','c','S','R'], [32,'r','S','p'], [33,'S','r','p'], [34,'p','r','S']
+            ]
         B=[]
         C=[]
-        for item in self.soct:
+        for item in self.cong_thuc:
             for row in A:
-                if item == row[0]:  # Nếu item khớp với giá trị đầu của hàng
-                    B = row[1]      # Lấy giá trị thứ 2
-                    C = row[2:]     # Lấy các giá trị còn lại
+                if item == row[0]:
+                    B = row[1]      
+                    C = row[2:]     
             for item_B in B:
-                if item_B not in self.ytbd:  
-                    self.ytbd.append(item_B)
+                if item_B not in self.yeu_to_them:  
+                    self.yeu_to_them.append(item_B)
             for item_C in C:
-                if item_C not in self.ytbd and item_C not in self.yt:  
-                    self.yt.append(item_C)
-                    self.ytt.append(item_C)
+                if item_C not in self.yeu_to_them and item_C not in self.yeu_to:  
+                    self.yeu_to.append(item_C)
+                    self.yeu_tot.append(item_C)
 
-    # def kt2(self):
-    #     for dong in self.soct:
-    #         if dong == 1:
-    #             A = ["beta","delta"]
-    #             if "alpha" not in self.ytbd:  
-    #                 self.ytbd.append("alpha")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 3:
-    #             A = ["alpha", "beta"]
-    #             if "delta" not in self.ytbd:  
-    #                 self.ytbd.append("delta")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 5:
-    #             A = ["a", "beta", "alpha"]
-    #             if "b" not in self.ytbd:  
-    #                 self.ytbd.append("b")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 6:
-    #             A = ["a", "delta", "alpha"]
-    #             if "c" not in self.ytbd:  
-    #                 self.ytbd.append("c")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 12:
-    #             A = ["a", "c", "alpha"]
-    #             if "c" not in self.ytbd:  
-    #                 self.ytbd.append("delta")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 14:
-    #             A = ["b", "a", "alpha"]
-    #             if "beta" not in self.ytbd:  
-    #                 self.ytbd.append("beta")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 16:
-    #             A = ["p", "b", "c"]
-    #             if "p" not in self.ytbd:  
-    #                 self.ytbd.append("p")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 19:
-    #             A = ["a", "b", "c"]
-    #             if "p" not in self.ytbd:  
-    #                 self.ytbd.append("p")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
-    #         if dong == 20:
-    #             A = ["p", "c", "b", "a"]
-    #             if "S" not in self.ytbd:  
-    #                 self.ytbd.append("S")
-    #             for item in A:
-    #                 if item not in self.ytbd and item not in self.yt:  
-    #                     self.yt.append(item)
-    #                     self.ytt.append(item)
     def tim(self, giatri):
-        prev_length = len(self.ytt)
+        prev_length = len(self.yeu_tot)
         while True:
-            if not self.soct:  # Check if `soct` is empty
-                self.kt1(giatri)  # Use self to call the method
+            if not self.cong_thuc:  
+                self.kt1(giatri) 
                 self.LoiGiai()
-                #self.kt2()
             else:
-                for item in self.ytt:
-                    self.kt1(item)  # Use self to call the method
+                for item in self.yeu_tot:
+                    self.kt1(item)  
                     self.LoiGiai()
-
-                    #self.kt2()
-
-            # Break the loop if no new items are added to `ytt`
-            if len(self.ytt) == prev_length:
+            if len(self.yeu_tot) == prev_length:
                 break
-            prev_length = len(self.ytt)
+            prev_length = len(self.yeu_tot)
 
-# Ví dụ sử dụng
-# Khởi tạo các giá trị đã biết (góc nhập bằng độ, cạnh nếu có)
 
-text = "alpha=45,delta=45,a=3,S=?"
+
+text = "a=5,b=4,c=3,alpha=90,r=?"
 parsed_data = GiaiTamGiac.parse_input(text)
 parsed_data1 = GiaiTamGiac.process_text(text)
 
 
 tam_giac = GiaiTamGiac(**parsed_data)
 tam_giac.giai()
-#tam_giac.is_valid_triangle()
-#ket_qua = tam_giac.ket_qua(fields=['alpha (độ)', 'a', 'diện tích (S)','beta (độ)','delta (độ)','c'])
-#Display results
-# for key, value in ket_qua.items():
-#     print(f"{key}: {value}")
-# a="dientich"
-# GiaiTamGiac.ktra(a)
-# b = "S"
+tam_giac.is_valid_triangle()
 tam_giac.tim(parsed_data1)
-#print("yt:", tam_giac.yt)
-#print("ytt", tam_giac.ytt)
-print("loigiai", tam_giac.loigiai)
-print("ytbd:", tam_giac.ytbd)
-print("soct",tam_giac.soct)
-print("Mảng", tam_giac.Gia_tri_tinh)
-soct_reversed = tam_giac.soct[::-1]
 
-# Lấy các giá trị đầu tiên của các phần tử trong mảng loigiai
-values_loigiai = [item[0] for item in tam_giac.loigiai]
-
-# So sánh với mảng soct_reversed và in ra các giá trị trùng khớp
-common_values = [value for value in values_loigiai if value in soct_reversed]
 
 # In kết quả
 for item in tam_giac.loigiai:
-    if item[0] in tam_giac.soct:
+    if item[0] in tam_giac.cong_thuc:
         print(item[1])  # In giá trị thứ 2
