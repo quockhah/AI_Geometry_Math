@@ -29,7 +29,7 @@ class MainMenuFrame(tk.Frame):
         shapes = [
             ("🟥 Hình Vuông", "square"),
             ("📐 Hình Tam Giác", "triangle"),
-            ("▭ Hình Chữ Nhật", "rectangle")
+            ("▉ Hình Chữ Nhật", "rectangle")
         ]
         
         for text, shape_type in shapes:
@@ -41,7 +41,7 @@ class MainMenuFrame(tk.Frame):
                           fg="white",
                           width=15,
                           height=2)
-            btn.pack(pady=10, padx=20)
+            btn.pack(pady=15, padx=20)
         
         # Score display
         self.score_label = tk.Label(content_frame,
@@ -56,7 +56,7 @@ class MainMenuFrame(tk.Frame):
                            font=("Comic Sans MS", 12),
                            command=self.show_help,
                            bg="#87CEEB")
-        help_btn.pack(pady=10)
+        help_btn.pack(pady=5)
     
     def show_help(self):
         help_text = """

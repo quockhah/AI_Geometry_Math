@@ -3,13 +3,14 @@ from tkinter import ttk, messagebox, scrolledtext
 from PIL import Image, ImageTk
 from MainMenuFrame  import*
 from GeometrySolverFrame import*
+
 from TriangleCalculatorFrame import*
 
 class MainApplication:
     def __init__(self, root):
         self.root = root
-        self.root.title("Ứng dụng Học Hình Học")
-        self.root.geometry("1200x800")
+        self.root.title("Toán Ứng Dụng")
+        self.root.geometry("800x600")
         
         self.container = tk.Frame(root)
         self.container.pack(side="top", fill="both", expand=True)
@@ -17,7 +18,7 @@ class MainApplication:
         self.frames = {}
         
         # Khởi tạo tất cả các frame cần thiết
-        for F in (MainMenuFrame,SquareCalculatorFrame, 
+        for F in (MainMenuFrame,SquareCalculatorFrame, GeometrySolverFrame,
                   TriangleCalculatorFrame, RectangleCalculatorFrame):
             frame = F(self.container, self)
             self.frames[F] = frame
@@ -51,7 +52,7 @@ class MainApplication:
         """
         solver_window = tk.Toplevel(self.root)
         solver_window.title("Giải Toán Hình Học")
-        solver_window.geometry("1200x800")  # Kích thước của cửa sổ mới
+        solver_window.geometry("1200x680")  # Kích thước của cửa sổ mới
 
         solver_frame =  GeometrySolverFrame(solver_window, self)
         # Đặt lại giá trị loại hình
@@ -66,11 +67,7 @@ class MainApplication:
         # Ẩn MainApplication (có thể xóa hoặc không cần gọi ở đây tùy thuộc vào yêu cầu)
         self.root.withdraw()  # Ẩn cửa sổ chính
 
-
-
-
-
-
+    
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainApplication(root)
