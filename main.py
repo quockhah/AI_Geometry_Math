@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 from MainMenuFrame  import*
 from GeometrySolverFrame import*
 
-from TriangleCalculatorFrame import*
+
 
 class MainApplication:
     def __init__(self, root):
@@ -18,8 +18,7 @@ class MainApplication:
         self.frames = {}
         
         # Khởi tạo tất cả các frame cần thiết
-        for F in (MainMenuFrame,SquareCalculatorFrame, GeometrySolverFrame,
-                  TriangleCalculatorFrame, RectangleCalculatorFrame):
+        for F in (MainMenuFrame, GeometrySolverFrame,):
             frame = F(self.container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
