@@ -358,10 +358,10 @@ class GeometrySolverFrame(tk.Frame):
             self.canvas.create_text(x1 - 50, y1 + 40, text="P= ?", font=("Helvetica bold", 12), fill=side_P_color, tags="side_a_label")  # Chu vi
         elif shape == "triangle":
             self.canvas.create_polygon(200, 50, 50, 250, 350, 250, outline=default_line_color, fill=default_triangle_color, width=2)
-            side_a_color = "red" if "cạnh a" in problem_text or "a=" in problem_text else default_line_color
-            side_b_color = "red" if "cạnh b" in problem_text or "b=" in problem_text else default_line_color
+            side_a_color = "red" if "cạnh a" in problem_text or "a="  in problem_text else default_line_color
+            side_b_color = "red" if "cạnh b" in problem_text or "b=" in problem_text or "b" in problem_text else default_line_color
             side_c_color = "red" if "cạnh c" in problem_text or "c=" in problem_text else default_line_color
-            side_Hc_color = "red" if "chiều cao" in problem_text or "hc=" in problem_text else default_line_color
+            side_Hc_color = "red" if "chiều cao" in problem_text or "hc="  in problem_text else default_line_color
             angle_alpha_color = "red" if "góc alpha" in problem_text else default_fill_color
             angle_beta_color = "red" if "góc beta" in problem_text else default_fill_color
             angle_gamma_color = "red" if "góc delta" in problem_text else default_fill_color
