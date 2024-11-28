@@ -105,8 +105,5 @@ class MainMenuFrame(tk.Frame):
         1. Chọn một hình học bạn muốn học
         2. Nhập bài toán và chọn yêu cầu cần tìm
         3. Nhấn "Phân tích bài toán" để xem lời giải
-        4. Sử dụng nút "Quay lại" để trở về menu chính
-        
-        💡 Mẹo: Sử dụng AI Assistant để được giúp đỡ thêm!
-        """
+        4. Sử dụng nút "Quay lại" để trở về menu chính """
         messagebox.showinfo("Hướng dẫn 📖", help_text)
