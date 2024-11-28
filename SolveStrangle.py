@@ -40,11 +40,11 @@ class SolveStrangle:
         """
             Chọn giá trị hợp lệ từ các thuộc tính và danh sách `validStrangleData`.
 
-            Arguments:
-            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, và danh sách `validStrangleData`.
+            Args:
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, và danh sách `validStrangleData`.
 
             Returns:
-            tuple or None: Một tuple từ danh sách `validStrangleData` khớp với giá trị hợp lệ, hoặc None nếu không tìm thấy.
+                tuple or None: Một tuple từ danh sách `validStrangleData` khớp với giá trị hợp lệ, hoặc None nếu không tìm thấy.
         """
         isValue=None
         if self.alpha is not None:
@@ -62,12 +62,12 @@ class SolveStrangle:
         """
             Kiểm tra xem các cạnh và góc được cung cấp có tạo thành một tam giác hợp lệ hay không.
 
-            Arguments:
-            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `a`, `b`, `c` (các cạnh tam giác) 
+            Args:
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `a`, `b`, `c` (các cạnh tam giác) 
                 và phương thức `Choose_valid` để lấy dữ liệu cạnh và góc.
 
             Returns:
-            bool: Trả về `True` nếu tam giác hợp lệ, thoả mãn định lý bất đẳng thức tam giác và công thức cosine.
+                bool: Trả về `True` nếu tam giác hợp lệ, thoả mãn định lý bất đẳng thức tam giác và công thức cosine.
                 Nếu không hợp lệ, hàm sẽ in thông báo lỗi và thoát chương trình.
         """
         edges=[self.a,self.b,self.c]
@@ -94,11 +94,11 @@ class SolveStrangle:
         """
             Phân tích chuỗi để trích xuất các cặp key-value theo định dạng `key=value`.
 
-            Arguments:
-            text (str): Chuỗi đầu vào chứa các cặp key-value.
+            Args:
+                text (str): Chuỗi đầu vào chứa các cặp key-value.
 
             Returns:
-            dict: Một dictionary với key là chuỗi và value là số thực (float).
+                dict: Một dictionary với key là chuỗi và value là số thực (float).
         """
         pattern = r'(\w+)\s*=\s*([\d.]+)(?!\?)'
         matches = re.findall(pattern, text) 
@@ -109,11 +109,11 @@ class SolveStrangle:
         """
             Trích xuất biến đầu tiên có giá trị chưa xác định (`key=?`) từ một chuỗi.
 
-            Arguments:
-            text (str): Chuỗi đầu vào chứa các cặp key-value và biến chưa xác định.
+            Args:
+                text (str): Chuỗi đầu vào chứa các cặp key-value và biến chưa xác định.
 
             Returns:
-            str hoặc None: Tên biến có giá trị chưa xác định hoặc None nếu không tìm thấy.
+                str hoặc None: Tên biến có giá trị chưa xác định hoặc None nếu không tìm thấy.
         """
         matches = re.findall(r'(\w+)=\?', text)
         data = matches[0] if matches else None
@@ -123,11 +123,11 @@ class SolveStrangle:
         """
             Giải quyết các công thức toán học và cập nhật dữ liệu hợp lệ trong thuộc tính `validStrangleData`.
 
-            Arguments:
-            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính và phương thức cần thiết để tính toán.
+            Args:
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính và phương thức cần thiết để tính toán.
 
             Returns:
-            None: Hàm không trả về giá trị, nhưng cập nhật `self.validStrangleData` sau khi tính toán xong.
+                None: Hàm không trả về giá trị, nhưng cập nhật `self.validStrangleData` sau khi tính toán xong.
         """
         while True:
             changes = False
@@ -148,11 +148,11 @@ class SolveStrangle:
         """
             Phân tích các công thức và thiết lập mối quan hệ giữa các phần tử dựa trên `Relationship_A`.
 
-            Arguments:
-            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `formula`, `element_add`, `element`, và `yeu_tot`.
+            Args:
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `formula`, `element_add`, `element`, và `yeu_tot`.
 
             Returns:
-            None: Hàm không trả về giá trị, nhưng cập nhật các thuộc tính `element_add`, `element`, và `yeu_tot` dựa trên logic đã thực thi.
+                None: Hàm không trả về giá trị, nhưng cập nhật các thuộc tính `element_add`, `element`, và `yeu_tot` dựa trên logic đã thực thi.
         """
         
         Relationship_A = [[1,'alpha', 'beta', 'delta'], [2,'beta','alpha','delta'], [3, 'delta', 'alpha', 'beta'], [4,'a','b','alpha','beta'], [5,'b','a', 'beta', 'alpha']
@@ -182,13 +182,13 @@ class SolveStrangle:
         """
             Lưu trữ và xử lý giải pháp bằng cách kiểm tra và cập nhật các công thức liên quan.
 
-            Arguments:
-            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `formula` và `yeu_tot`, 
+            Args:
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `formula` và `yeu_tot`, 
                 cùng các phương thức `Check_formula` và `Solution`.
-            value: Giá trị được sử dụng để kiểm tra các công thức thông qua phương thức `Check_formula`.
+                value: Giá trị được sử dụng để kiểm tra các công thức thông qua phương thức `Check_formula`.
 
             Returns:
-            None: Hàm không trả về giá trị, nhưng liên tục cập nhật danh sách `yeu_tot` cho đến khi không còn thay đổi.
+                None: Hàm không trả về giá trị, nhưng liên tục cập nhật danh sách `yeu_tot` cho đến khi không còn thay đổi.
         """
         prev_length = len(self.yeu_tot)
         while True:
