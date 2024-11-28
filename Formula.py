@@ -4,13 +4,13 @@ def Formula_1(self, changes):
     """
         Tính toán giá trị các góc tam giác (alpha, beta, delta) dựa trên hai góc đã biết.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, 
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, 
             `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
     """
     if self.beta and self.delta and not self.alpha:
         self.alpha = math.pi - self.beta - self.delta
@@ -34,13 +34,13 @@ def Formula_2(self, changes):
     """
         Tính toán cạnh hoặc góc tam giác sử dụng định lý sin dựa trên các thông tin đã biết.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `alpha`, `beta`, `delta`, 
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `alpha`, `beta`, `delta`, 
             `a`, `b`, `c`, `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
     """
     if self.alpha and self.beta and self.b and not self.a:
         self.a = self.b * math.sin(self.alpha) / math.sin(self.beta)
@@ -121,13 +121,13 @@ def Formula_3(self, changes):
     """
         Tính toán các cạnh và nửa chu vi (p) của tam giác dựa trên các thông tin đã biết.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `a`, `b`, `c`, `p`, 
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `a`, `b`, `c`, `p`, 
             `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
     """
     if self.a and self.b and self.c and not self.p:
         self.p = (self.a + self.b + self.c) / 2  
@@ -159,12 +159,12 @@ def Formula_4(self, changes):
     """
         Tính diện tích tam giác (S) bằng công thức Heron hoặc tính một cạnh (a, b, c) nếu diện tích đã biết.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `a`, `b`, `c`, `S`, `p`, `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `a`, `b`, `c`, `S`, `p`, `solution`, và `Value_to_find`.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
     """
     if self.p and self.a and self.b and self.c and not self.S:
         self.S = math.sqrt(self.p * (self.p - self.a) * (self.p - self.b) * (self.p - self.c))
@@ -198,12 +198,12 @@ def Formula_5(self, changes):
     """
         Tính toán chiều cao (hc), diện tích (S), hoặc cạnh (c) của tam giác dựa trên các giá trị có sẵn.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `c`, `hc`, `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `c`, `hc`, `solution`, và `Value_to_find`.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
 
     """
     if self.S and self.c and not self.hc:
@@ -230,12 +230,12 @@ def Formula_6(self, changes):
         Tính bán kính đường tròn ngoại tiếp (R), diện tích tam giác (S), hoặc các cạnh (a, b, c) của tam giác 
         dựa trên các giá trị có sẵn.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `a`, `b`, `c`, `R`, `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `a`, `b`, `c`, `R`, `solution`, và `Value_to_find`.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
 
     """
     if self.S and self.a and self.b and self.c and not self.R:
@@ -274,12 +274,12 @@ def Formula_7(self, changes):
         Tính bán kính (r), diện tích (S) và nữa chu vi (p) của hình tròn hoặc tam giác
         dựa trên các giá trị đã có sẵn.
 
-        Arguments:
-        self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `p`, `r`, `solution`, và `Value_to_find`.
-        changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
+        Args:
+            self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính như `S`, `p`, `r`, `solution`, và `Value_to_find`.
+            changes (bool): Biến cờ để theo dõi liệu có sự thay đổi nào được thực hiện trong quá trình tính toán.
 
         Returns:
-        bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
+            bool: Trả về `True` nếu có thay đổi được thực hiện, ngược lại trả về `False`.
     """
     if self.S and self.p and not self.r:
         self.r = self.S / self.p
@@ -304,7 +304,7 @@ def Formula_8(self, changes):
     """
         Tính chu vi (C) hoặc nữa chu vi (p) của tam giác dựa trên các giá trị đã biết.
 
-        arguments:
+        Args:
             self (object): Đối tượng của lớp, chứa các thuộc tính như a, b, c, p, C.
             changes (bool): Biến đánh dấu xem có thay đổi giá trị nào trong quá trình tính toán hay không.
 
