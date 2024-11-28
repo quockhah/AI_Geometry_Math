@@ -8,6 +8,12 @@ from datetime import datetime
 import re
 class GeometrySolverFrame(tk.Frame):
     def __init__(self, parent, controller):
+        """_summary_
+
+        Arguments:
+            parent -- _description_ --khung cha.
+            controller -- _description_ --controller -- đối tượng điều khiển để chuyển đổi giữa các màn hình.
+        """
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.configure(bg="#F0F8FF")
@@ -42,8 +48,9 @@ class GeometrySolverFrame(tk.Frame):
         self.setup_visualization()
         self.setup_calculation_display()
         self.setup_note()
-
+    #Tạo giao diện để người dùng chọn loại hình học (ví dụ: hình vuông, hình tam giác, hình chữ nhật).
     def setup_shape_selector(self):
+
         shape_frame = tk.LabelFrame(self.left_panel, text="Chọn Hình",
                                     font=("Arial", 12, "bold"), bg="#F0F8FF")
         shape_frame.pack(fill="x", pady=10)
@@ -58,8 +65,9 @@ class GeometrySolverFrame(tk.Frame):
                                 variable=self.shape_var, font=("Arial", 11),
                                 command=self.on_shape_select, bg="#F0F8FF")
             rb.pack(side="left", padx=20, pady=5)
-
+    #Tạo giao diện để người dùng nhập bài toán
     def setup_problem_input(self):
+
         input_frame = tk.LabelFrame(self.left_panel, text="Nhập Bài Toán",font=("Arial", 12, "bold"), bg="#F0F8FF")
         input_frame.pack(fill="x", pady=10)
         self.problem_text = scrolledtext.ScrolledText(input_frame,height=8, width=75,font=("Arial", 11))
@@ -68,9 +76,9 @@ class GeometrySolverFrame(tk.Frame):
         analyze_btn = tk.Button(input_frame, text="Giải bài toán",command=self.save_problem_to_json,font=("Arial", 11, "bold"),bg="#4CAF50", fg="white")
         analyze_btn.pack(pady=10)
     
-    
+    #Lưu nội dung bài toán vào tệp JSON để xử lý và hiển thị lại khi cần
     def save_problem_to_json(self):
-       
+
         problem_text = self.problem_text.get("1.0", "end-1c").strip()
         shape = self.shape_var.get()
 
@@ -109,7 +117,23 @@ class GeometrySolverFrame(tk.Frame):
         
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể lưu bài toán: {e}")
+
+    #Hàm này sẽ phân tích ngữ nghĩa bài toán để trích xuất thông tin cần thiết.
     def parse_problem_semantics(self, problem_text, shape):
+        """_summary_
+            --Phân tích ngữ nghĩa bài toán để trích xuất thông tin cần thiết.
+        Arguments:
+            problem_text -- _description_ -- nội dung bài toán.
+            shape -- _description_ -- loại hình học (hình vuông, tam giác, chữ nhật).
+
+        Returns:
+            _description_ 
+            semantic_data -- dữ liệu ngữ nghĩa, bao gồm:
+            - Các thực thể liên quan.
+            - Thông tin kích thước.
+            - Hướng dẫn về màu sắc.
+            - Các giá trị cho trước (số, đơn vị).
+        """
         semantic_data = {
             "entities": [],
             "dimensions": {},
@@ -145,7 +169,14 @@ class GeometrySolverFrame(tk.Frame):
 
         return semantic_data
     def extract_color_instructions(self, problem_text):
-        """Extract color instructions from problem text"""
+        """_summary_
+
+        Arguments:
+            problem_text -- _description_ -- nội dung bài toán.
+
+        Returns:
+            _description_ -- từ điển chứa các yếu tố hình học và màu sắc tương ứng.
+        """
         color_instructions = {}
         
         shape_elements = {
@@ -168,7 +199,7 @@ class GeometrySolverFrame(tk.Frame):
 
         for color_word, color_value in self.COLOR_MAP.items():
             if color_word in problem_text:
-                for shape_type, elements in shape_elements.items():
+                for  elements in shape_elements.items():
                     for element, keys in elements.items():
                         if element in problem_text:
                             for key in keys:
@@ -177,7 +208,15 @@ class GeometrySolverFrame(tk.Frame):
         return color_instructions
 
     def extract_dimensions(self, problem_text, dimension_keywords):
-        """Extract dimensions based on keywords"""
+        """_summary_
+        Trích xuất kích thước từ bài toán dựa trên các từ khóa (chiều dài, chiều rộng, cạnh, v.v.).
+        Arguments:
+            problem_text -- _description_  --nội dung bài toán.
+            dimension_keywords -- _description_ -- danh sách các từ khóa để tìm kích thước.
+
+        Returns:
+            _description_ -- từ điển chứa thông tin kích thước và giá trị tương ứng.
+        """ 
         dimensions = {}
         for keyword in dimension_keywords:
             pattern = fr'{keyword}\s*=\s*(\d+\.?\d*)'
@@ -185,8 +224,10 @@ class GeometrySolverFrame(tk.Frame):
             if match:
                 dimensions[keyword] = float(match.group(1))
         return dimensions
+    
+    # Hàm tải dữ liệu bài toán từ JSON và cập nhật giao diện minh họa
     def load_and_update_visualization(self):
-        """Load problem from JSON and update visualization"""
+
         if not self.current_problem_file:
             return
 
@@ -200,46 +241,10 @@ class GeometrySolverFrame(tk.Frame):
                 self.draw_shape(shape, problem_data)
 
         except Exception as e:
-            messagebox.showerror("Lỗi", f"Không thể đọc file: {e}")
-    def draw_shape(self, shape, problem_data=None):
-        """Draw shape with optional color modifications"""
-        self.canvas.delete("all")
-
-
-        default_line_color = "black"
-        default_fill_color = "#90EE90"
-
-       
-        color_instructions = problem_data['semantic_analysis']['color_instructions'] if problem_data else {}
-
-        if shape == "triangle":
-          
-            side_colors = {
-                "a": color_instructions.get("side_a", default_line_color),
-                "b": color_instructions.get("side_b", default_line_color),
-                "c": color_instructions.get("side_c", default_line_color)
-            }
-            
-            angle_colors = {
-                "α": color_instructions.get("angle_alpha", default_line_color),
-                "β": color_instructions.get("angle_beta", default_line_color),
-                "δ": color_instructions.get("angle_delta", default_line_color)
-            }
-
-            self.canvas.create_polygon(
-                200, 50, 50, 250, 350, 250, 
-                outline=default_line_color, 
-                fill=default_fill_color, 
-                width=2
-            )
-
-            self.canvas.create_text(
-                200, 30, text="α", 
-                font=("Arial", 12, "bold"), 
-                fill=angle_colors["α"]
-            )
-
+            messagebox.showerror("Lỗi", f"Không thể đọc file: {e}") 
+        # Hàm thiết lập giao diện minh họa hình học
     def setup_visualization(self):
+
         visual_frame = tk.LabelFrame(self.right_panel, text="Hình ảnh minh họa",
                                      font=("Arial", 12, "bold"), bg="#F0F8FF")
         visual_frame.pack(fill="both", expand=True, pady=10)
@@ -247,7 +252,7 @@ class GeometrySolverFrame(tk.Frame):
         self.canvas = tk.Canvas(visual_frame, width=400, height=300,
                                 bg="white", highlightthickness=1)
         self.canvas.pack(pady=10, padx=10)
-
+    # Hàm thiết lập giao diện hiển thị các bước giải
     def setup_calculation_display(self):
         calc_frame = tk.LabelFrame(self.left_panel, text="Các bước giải",
                                    font=("Arial", 12, "bold"), bg="#F0F8FF")
@@ -256,9 +261,9 @@ class GeometrySolverFrame(tk.Frame):
         self.calc_text = scrolledtext.ScrolledText(calc_frame, height=10,
                                                    font=("Arial", 11))
         self.calc_text.pack(pady=10, padx=10, fill="both", expand=True)
-
+    # Hàm thiết lập giao diện ghi chú
     def setup_note(self):
-        
+        #Tạo khung chứa ghi chú về các yếu tố của hình học (như công thức, khái niệm, v.v.).
         chat_frame = tk.LabelFrame(self.right_panel, text="Chú thích",
                                 font=("Arial", 12, "bold"), bg="#F0F8FF")
         chat_frame.pack(fill="both", expand=True, pady=10)
@@ -266,12 +271,14 @@ class GeometrySolverFrame(tk.Frame):
                                                     font=("Arial", 11))
         self.chat_display.pack(pady=5, padx=10, fill="both", expand=True)
 
-
+    #hiển thị từng ghi chú khi người dùng chọn 1 hình học
     def on_shape_select(self):
+        """ Cập nhật giao diện và hiển thị ghi chú tương ứng khi người dùng chọn loại hình học."""
         shape = self.shape_var.get()
         self.draw_shape(shape)
         self.chat_display.config(state=tk.NORMAL)  
-        self.chat_display.delete("1.0", tk.END)  
+        self.chat_display.delete("1.0", tk.END) 
+        # Hiển thị chú thích liên quan đến hình 
         if shape == "rectangle":
             self.chat_display.insert(tk.END, 
                                         "- Chiều dài: a\n"
@@ -322,7 +329,14 @@ class GeometrySolverFrame(tk.Frame):
                                     
             self.chat_display.config(state=tk.DISABLED)
     def draw_shape(self, shape, problem_text=None):
-        """Draw shape with potential color modifications for specific elements"""
+        """_summary_
+
+        Arguments:
+            shape -- _description_ --loại hình học cần vẽ (hình vuông, hình chữ nhật, tam giác).
+
+        Keyword Arguments:
+            problem_text -- _description_ (default: {None}) -- nội dung bài toán để xác định thông tin bổ sung (màu sắc, chú thích).
+        """
         self.canvas.delete("all")
         default_line_color = "black"
         default_fill_color = "#080FE6"
@@ -340,20 +354,27 @@ class GeometrySolverFrame(tk.Frame):
             x2 = x1 + square_size
             y2 = y1 + square_size
             self.canvas.create_rectangle(x1, y1, x2, y2, width=2, outline=default_line_color, fill=default_square_color)
-            side_a_color = "red" if "cạnh a" in problem_text or "a =" in problem_text or "cạnh" in problem_text else default_line_color
-            side_d_color = "red" if "đường chéo" in problem_text or "d =" in problem_text else default_line_color
-            side_S_color = "red" if "diện tích" in problem_text or "S =" in problem_text else default_line_color
-            side_P_color = "red" if "chu vi" in problem_text or "P =" in problem_text else default_line_color
-            self.canvas.create_text((x1 + x2) // 2, y1 - 10, text="a", font=("Arial", 12), fill=side_a_color,tags="side_a_label") 
-            self.canvas.create_text(x1 - 10, y1 - 10, text="A", font=("Arial", 12), fill="black") 
-            self.canvas.create_text(x2 + 10, y1 - 10, text="B", font=("Arial", 12), fill="black") 
-            self.canvas.create_text(x2 + 10, y2 + 10, text="C", font=("Arial", 12), fill="black") 
+
+            side_a_color = "red" if "cạnh a" in problem_text.lower() or "a =" in problem_text.lower() or "cạnh" in problem_text.lower() else default_line_color
+            side_d_color = "red" if "đường chéo" in problem_text.lower() or "d =" in problem_text.lower() else default_line_color
+            side_S_color = "red" if "diện tích" in problem_text.lower() or "s =" in problem_text.lower() else default_line_color
+            side_P_color = "red" if "chu vi" in problem_text.lower() or "p =" in problem_text.lower() else default_line_color
+            side_AC_color = "red" if "đường chéo ac" in problem_text.lower() or "đường chéo ac =" in problem_text.lower() else default_line_color
+            side_BD_color = "red" if "đường chéo bd" in problem_text.lower() or "đường chéo bd =" in problem_text.lower() else default_line_color
+
+            self.canvas.create_text((x1 + x2) // 2, y1 - 10, text="a", font=("Arial", 12), fill=side_a_color, tags="side_a_label")
+            self.canvas.create_text(x1 - 10, y1 - 10, text="A", font=("Arial", 12), fill="black")
+            self.canvas.create_text(x2 + 10, y1 - 10, text="B", font=("Arial", 12), fill="black")
+            self.canvas.create_text(x2 + 10, y2 + 10, text="C", font=("Arial", 12), fill="black")
             self.canvas.create_text(x1 - 10, y2 + 10, text="D", font=("Arial", 12), fill="black")
-            self.canvas.create_line(x1, y1, x2, y2, fill=side_d_color, dash=(4, 2)) 
-            self.canvas.create_line(x1, y2, x2, y1, fill=side_d_color, dash=(4, 2))
-            xd = (x1 + x2) // 2 
-            yd = (y1 + y2) // 2 + 20 
-            self.canvas.create_text(xd, yd, text="d", font=("Arial", 12), fill=side_d_color, tags="side_a_label")
+            self.canvas.create_line(x1, y1, x2, y2, fill=side_AC_color, dash=(4, 2))
+            self.canvas.create_line(x1, y2, x2, y1, fill=side_BD_color, dash=(4, 2))
+
+            xd = (x1 + x2) // 2
+            yd = (y1 + y2) // 2 + 20
+            side_diag_color = "red" if side_d_color == "red" or side_AC_color == "red" or side_BD_color == "red" else default_line_color
+            self.canvas.create_text(xd, yd, text="d", font=("Arial", 12), fill=side_diag_color, tags="side_a_label")
+
             self.canvas.create_text(x1 - 50, y1 + 20, text="S= ?", font=("Helvetica bold", 12), fill=side_S_color,tags="side_a_label")  # Diện tích
             self.canvas.create_text(x1 - 50, y1 + 40, text="P= ?", font=("Helvetica bold", 12), fill=side_P_color, tags="side_a_label")  # Chu vi
         elif shape == "triangle":
@@ -364,7 +385,7 @@ class GeometrySolverFrame(tk.Frame):
             side_Hc_color = "red" if "chiều cao" in problem_text or "hc="  in problem_text else default_line_color
             angle_alpha_color = "red" if "góc alpha" in problem_text else default_fill_color
             angle_beta_color = "red" if "góc beta" in problem_text else default_fill_color
-            angle_gamma_color = "red" if "góc delta" in problem_text else default_fill_color
+            angle_delta_color = "red" if "góc delta" in problem_text else default_fill_color
 
             self.canvas.create_text(120, 140, text="a", font=("Arial", 12, "bold"), fill=side_a_color)
             self.canvas.create_text(280, 140, text="b", font=("Arial", 12, "bold"), fill=side_b_color)
@@ -372,7 +393,7 @@ class GeometrySolverFrame(tk.Frame):
             self.canvas.create_text(185, 240, text="Hc", font=("Arial", 12, "bold"), fill=side_Hc_color)
             self.canvas.create_text(193, 73, text="α", font=("Arial", 16, "bold"), fill=angle_alpha_color)
             self.canvas.create_text(80, 240, text="β", font=("Arial", 16, "bold"), fill=angle_beta_color)
-            self.canvas.create_text(320, 245, text="δ", font=("Arial", 16, "bold"), fill=angle_gamma_color)
+            self.canvas.create_text(320, 245, text="δ", font=("Arial", 16, "bold"), fill=angle_delta_color)
             
             self.canvas.create_text(200, 30, text="A", font=("Arial", 12, "bold"), fill=default_line_color)
             self.canvas.create_text(30, 250, text="B", font=("Arial", 12, "bold"), fill=default_line_color)
@@ -384,22 +405,30 @@ class GeometrySolverFrame(tk.Frame):
         elif shape == "rectangle":
             self.canvas.create_rectangle(50, 50, 350, 200, width=2, outline=default_line_color, fill=default_rectangle_color)
 
-            length_color = "red" if "chiều dài" in problem_text or "a" in problem_text else default_line_color
-            width_color = "red" if "chiều rộng" in problem_text or "b" in problem_text else default_line_color
-            diagonal_color = "red" if "đường chéo" in problem_text or "d =" in problem_text else default_line_color
-            area_color = "red" if "diện tích" in problem_text or "S" in problem_text else default_line_color
-            perimeter_color = "red" if "chu vi" in problem_text or "P" in problem_text else default_line_color
+            diagonal_AC_color = "red" if "đường chéo ac" in problem_text.lower() or "đường chéo ac =" in problem_text.lower() else default_line_color
+            diagonal_BD_color = "red" if "đường chéo bd" in problem_text.lower() or "đường chéo bd =" in problem_text.lower() else default_line_color
+            diagonal_color = "red" if "đường chéo" in problem_text.lower() or "d =" in problem_text.lower() else default_line_color
+            length_color = "red" if "chiều dài" in problem_text.lower() or "a = " in problem_text.lower() else default_line_color
+            width_color = "red" if "chiều rộng" in problem_text.lower() or "b=" in problem_text.lower() else default_line_color
+            area_color = "red" if "diện tích" in problem_text.lower() or "s" in problem_text.lower() else default_line_color
+            perimeter_color = "red" if "chu vi" in problem_text.lower() or "p" in problem_text.lower() else default_line_color
+
             self.canvas.create_text(200, 30, text="a", font=("Helvetica", 10, "bold"), fill=length_color)
             self.canvas.create_text(30, 125, text="b", font=("Helvetica", 10, "bold"), fill=width_color)
-            self.canvas.create_text(45, 45, text="A", font=("Helvetica", 10, "bold"), fill="black") 
-            self.canvas.create_text(355, 45, text="B", font=("Helvetica", 10, "bold"), fill="black") 
-            self.canvas.create_text(355, 205, text="C", font=("Helvetica", 10, "bold"), fill="black") 
+            self.canvas.create_text(45, 45, text="A", font=("Helvetica", 10, "bold"), fill="black")
+            self.canvas.create_text(355, 45, text="B", font=("Helvetica", 10, "bold"), fill="black")
+            self.canvas.create_text(355, 205, text="C", font=("Helvetica", 10, "bold"), fill="black")
             self.canvas.create_text(45, 205, text="D", font=("Helvetica", 10, "bold"), fill="black")
 
-            self.canvas.create_line(50, 50, 350, 200, fill=diagonal_color, dash=(4, 2))  
-            self.canvas.create_line(50, 200, 350, 50, fill=diagonal_color, dash=(4, 2))  
-            xd = (50 + 350) // 2 
-            yd = (50 + 200) // 2  
-            self.canvas.create_text(xd, yd + 20, text="d", font=("Helvetica", 10, "bold"), fill=diagonal_color)
-            self.canvas.create_text(200, 220, text="S=?", font=("Helvetica", 12, "bold"), fill=area_color)  
+            self.canvas.create_line(50, 50, 350, 200, fill=diagonal_AC_color, dash=(4, 2))
+            self.canvas.create_line(50, 200, 350, 50, fill=diagonal_BD_color, dash=(4, 2))
+
+            xd = (50 + 350) // 2
+            yd = (50 + 200) // 2
+
+            # Đổi màu văn bản "d" cho cả hai đường chéo
+            side_diag_color = "red" if diagonal_AC_color == "red" or diagonal_BD_color == "red" or diagonal_color == "red" else default_line_color
+            self.canvas.create_text(xd, yd +20 , text="d", font=("Arial", 12), fill=side_diag_color, tags="side_a_label")
+
+            self.canvas.create_text(200, 220, text="S=?", font=("Helvetica", 12, "bold"), fill=area_color)
             self.canvas.create_text(200, 240, text="P=?", font=("Helvetica", 12, "bold"), fill=perimeter_color)
