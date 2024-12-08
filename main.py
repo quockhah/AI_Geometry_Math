@@ -10,7 +10,7 @@ class MainApplication:
     def __init__(self, root):
         self.root = root
         self.root.title("Toán Ứng Dụng")
-        self.root.geometry("950x670")
+        self.root.geometry("800x600")
         
         self.container = tk.Frame(root)
         self.container.pack(side="top", fill="both", expand=True)
@@ -51,7 +51,7 @@ class MainApplication:
         """
         solver_window = tk.Toplevel(self.root)
         solver_window.title("Giải Toán Hình Học")
-        solver_window.geometry("1200x750")  # Kích thước của cửa sổ mới
+        solver_window.geometry("1200x680")  # Kích thước của cửa sổ mới
 
         solver_frame =  GeometrySolverFrame(solver_window, self)
         # Đặt lại giá trị loại hình
@@ -66,34 +66,6 @@ class MainApplication:
         # Ẩn MainApplication (có thể xóa hoặc không cần gọi ở đây tùy thuộc vào yêu cầu)
         self.root.withdraw()  # Ẩn cửa sổ chính
 
-    def show_triangle_solver(self, frame_class):
-        calculator_window = tk.Toplevel(self.root)
-        calculator_window.title("Giải Toán Tam Giác")
-        calculator_window.geometry("1000x600") 
-        calculator_frame =  TriangleCalculatorFrame(calculator_window, self)
-        calculator_frame.grid(row=0, column=0, sticky="nsew")
-        calculator_window.grid_rowconfigure(0, weight=1)
-        calculator_window.grid_columnconfigure(0, weight=1)
-        self.root.withdraw()
-
-    def show_rectangle_solver(self,frame_class):
-        calculator_window = tk.Toplevel(self.root)
-        calculator_window.title("Hình chữ nhật")
-        calculator_window.geometry("1000x600") 
-        calculator_frame = RectangleCalculatorFrame(calculator_window, self)
-        calculator_frame.grid(row=0, column=0, sticky="nsew")
-        calculator_window.grid_rowconfigure(0, weight=1)
-        calculator_window.grid_columnconfigure(0, weight=1)
-        self.root.withdraw()
-    def show_square_solver(self,frame_class):
-        calculator_window = tk.Toplevel(self.root)
-        calculator_window.title("Hình vuông")
-        calculator_window.geometry("1000x600") 
-        calculator_frame = SquareCalculatorFrame(calculator_window, self)
-        calculator_frame.grid(row=0, column=0, sticky="nsew")
-        calculator_window.grid_rowconfigure(0, weight=1)
-        calculator_window.grid_columnconfigure(0, weight=1)
-        self.root.withdraw()
     
 if __name__ == "__main__":
     root = tk.Tk()
