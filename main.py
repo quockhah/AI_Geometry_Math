@@ -67,6 +67,7 @@ class MainApplication:
         self.root.withdraw()  # Ẩn cửa sổ chính
 
     
+    
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainApplication(root)

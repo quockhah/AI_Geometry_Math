@@ -128,9 +128,24 @@ class SemanticNetwork:
             file_name (str): The name of the file containing the data.
         """
         with open(file_name, "r", encoding="utf-8") as file:
-            for line in file:
-                concept1, relation, concept2 = line.strip().split(";")
-                self.add_relationship(concept1, relation, concept2)
+            # Đọc toàn bộ nội dung file
+            content = file.read()
+            
+            # Tách nội dung thành các câu bằng dấu chấm (hoặc sử dụng phương pháp khác nếu cần)
+            sentences = content.strip().split(".")
+            print(sentences)
+            for sentence in sentences:
+                # Bỏ qua các câu rỗng hoặc chỉ chứa khoảng trắng
+                if not sentence.strip():
+                    continue
+                
+                # Xử lý câu: Tách thành concept1, relation, concept2
+                try:
+                    concept1, relation, concept2 = sentence.strip().split(";")
+                    self.add_relationship(concept1, relation, concept2)
+                except ValueError:
+                    print(f"Bỏ qua câu không hợp lệ: {sentence}")
+
 
     def search_by_relationship(self, concept, relation):
         """_summary_

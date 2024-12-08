@@ -2,7 +2,7 @@ import math
 import re
 import Formula
 
-class SolveStrangle:
+class SolveTriangle:
 
     def __init__(self, **kwargs):
         # Khởi tạo các giá trị đã biết
@@ -18,7 +18,7 @@ class SolveStrangle:
         self.p = kwargs.get('p')
         self.r = kwargs.get('r')
         self.hc = kwargs.get('hc')
-        self.validStrangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
+        self.validTriangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
         self.Value_to_find = []
         self.formula=[]
         self.element=[]
@@ -38,13 +38,13 @@ class SolveStrangle:
 
     def Choose_valid(self):
         """
-            Chọn giá trị hợp lệ từ các thuộc tính và danh sách `validStrangleData`.
+            Chọn giá trị hợp lệ từ các thuộc tính và danh sách `validTriangleData`.
 
             Args:
-                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, và danh sách `validStrangleData`.
+                self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính `alpha`, `beta`, `delta`, và danh sách `validTriangleData`.
 
             Returns:
-                tuple or None: Một tuple từ danh sách `validStrangleData` khớp với giá trị hợp lệ, hoặc None nếu không tìm thấy.
+                tuple or None: Một tuple từ danh sách `validTriangleData` khớp với giá trị hợp lệ, hoặc None nếu không tìm thấy.
         """
         isValue=None
         if self.alpha is not None:
@@ -53,7 +53,7 @@ class SolveStrangle:
             isValue=self.beta
         elif self.delta is not None and isValue==None:
             isValue=self.delta
-        for i in self.validStrangleData:
+        for i in self.validTriangleData:
             if i[0]==isValue:
                 result=i
         return result
@@ -121,13 +121,13 @@ class SolveStrangle:
     
     def Solve_math(self):
         """
-            Giải quyết các công thức toán học và cập nhật dữ liệu hợp lệ trong thuộc tính `validStrangleData`.
+            Giải quyết các công thức toán học và cập nhật dữ liệu hợp lệ trong thuộc tính `validTriangleData`.
 
             Args:
                 self: Tham chiếu đến đối tượng hiện tại, chứa các thuộc tính và phương thức cần thiết để tính toán.
 
             Returns:
-                None: Hàm không trả về giá trị, nhưng cập nhật `self.validStrangleData` sau khi tính toán xong.
+                None: Hàm không trả về giá trị, nhưng cập nhật `self.validTriangleData` sau khi tính toán xong.
         """
         while True:
             changes = False
@@ -141,7 +141,7 @@ class SolveStrangle:
             changes = Formula.Formula_8(self, changes)
 
             if not changes:
-                self.validStrangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
+                self.validTriangleData = [[self.alpha,self.b,self.c,self.a],[self.beta,self.a,self.c,self.b],[self.delta,self.b,self.a,self.c]]
                 break
 
     def Solution(self):
@@ -205,21 +205,21 @@ class SolveStrangle:
 
 
 text = "a=5,c=3,alpha=90,S=?"
-parsed_data = SolveStrangle.Parse_input(text)
-parsed_data1 = SolveStrangle.Process_text(text)
+parsed_data = SolveTriangle.Parse_input(text)
+parsed_data1 = SolveTriangle.Process_text(text)
 
 
-Strangle = SolveStrangle(**parsed_data)
-Strangle.Solve_math()
+Triangle = SolveTriangle(**parsed_data)
+Triangle.Solve_math()
 
-Strangle.Save_solution(parsed_data1)
-#Strangle.Is_valid_triangle()
-print(Strangle.yeu_tot)
-print(Strangle.solution)
-print(Strangle.formula)
+Triangle.Save_solution(parsed_data1)
+#Triangle.Is_valid_triangle()
+print(Triangle.yeu_tot)
+print(Triangle.solution)
+print(Triangle.formula)
 
 
 # In kết quả
-for item in Strangle.solution:
-    if item[0] in Strangle.formula:
+for item in Triangle.solution:
+    if item[0] in Triangle.formula:
         print(item[1])  # In giá trị thứ 2

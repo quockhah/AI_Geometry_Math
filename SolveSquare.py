@@ -265,7 +265,7 @@ if __name__ == "__main__":
     try:
         # Case 2: Valid data
         print("\nTrường hợp 2: Dữ liệu hợp lệ (độ dài cạnh = 5)")
-        square_valid = Square(side=5)  # Valid Data
+        square_valid = Square(diagonal=5)  # Valid Data
         results_valid = square_valid.solve()
         print("Kết quả hình vuông (hợp lệ):")
         print(results_valid)

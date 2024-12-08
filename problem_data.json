@@ -1,0 +1,15 @@
+{
+    "problem_text": "cho hình chữ nhật có đường chéo bằng 110cm, chu vi bằng 52220cm, tính diện tích",
+    "shape": "rectangle",
+    "semantic_analysis": {
+        "shape": "rectangle",
+        "known_factors": {
+            "chu vi": "52220cm",
+            "đường chéo": "110cm"
+        },
+        "calculations": [
+            "diện tích"
+        ]
+    },
+    "timestamp": "2024-12-08 19:32:12"
+}

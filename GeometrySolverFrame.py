@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
-import openai
 from MainMenuFrame import *
 import json
 import os
@@ -48,6 +47,7 @@ class GeometrySolverFrame(tk.Frame):
         self.setup_visualization()
         self.setup_calculation_display()
         self.setup_note()
+
     #Tạo giao diện để người dùng chọn loại hình học (ví dụ: hình vuông, hình tam giác, hình chữ nhật).
     def setup_shape_selector(self):
 
@@ -65,6 +65,7 @@ class GeometrySolverFrame(tk.Frame):
                                 variable=self.shape_var, font=("Arial", 11),
                                 command=self.on_shape_select, bg="#F0F8FF")
             rb.pack(side="left", padx=20, pady=5)
+
     #Tạo giao diện để người dùng nhập bài toán
     def setup_problem_input(self):
 
@@ -75,7 +76,7 @@ class GeometrySolverFrame(tk.Frame):
 
         analyze_btn = tk.Button(input_frame, text="Giải bài toán",command=self.save_problem_to_json,font=("Arial", 11, "bold"),bg="#4CAF50", fg="white")
         analyze_btn.pack(pady=10)
-    
+
     #Lưu nội dung bài toán vào tệp JSON để xử lý và hiển thị lại khi cần
     def save_problem_to_json(self):
 
@@ -87,7 +88,8 @@ class GeometrySolverFrame(tk.Frame):
             return
 
         semantic_data = self.parse_problem_semantics(problem_text, shape)
-
+        if semantic_data is None:
+            return
         self.draw_shape(shape, problem_text)
 
         problem_data = {
@@ -98,7 +100,7 @@ class GeometrySolverFrame(tk.Frame):
         }
         os.makedirs("problem_data", exist_ok=True)
 
-        filename = f"problem_data/data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        filename = f"problem_data.json"
 
         try:
             with open(filename, 'w', encoding='utf-8') as f:
@@ -106,17 +108,36 @@ class GeometrySolverFrame(tk.Frame):
             
             self.current_problem_file = filename
             
-            messagebox.showinfo("Thành công", f"Đã lưu bài toán vào {filename}")
             
             self.calc_text.delete('1.0', tk.END)
-            self.calc_text.insert(tk.END, "Phân tích ngữ nghĩa:\n")
-            for key, value in semantic_data.items():
-                self.calc_text.insert(tk.END, f"{key}: {value}\n")
-            
+            self.calc_text.insert(tk.END, "Phân tích:\n")
+            semantic_analysis = problem_data.get("semantic_analysis", {})
+            known_factors = semantic_analysis.get("known_factors", {})
+            calculations = semantic_analysis.get("calculations", [])
+
+            known_factors_str = ", ".join(f"{key}={value}" for key, value in known_factors.items())
+            calculations_str = ", ".join(calculations)
+
+            self.calc_text.insert(tk.END, f"Các yếu tố đã biết: {known_factors_str}\n")
+            self.calc_text.insert(tk.END, f"Yêu cầu: tính {calculations_str}\n")
+     
             self.load_and_update_visualization()
         
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể lưu bài toán: {e}")
+
+    def validate_shape_in_text(self,text,shape):
+        shapes = [("Hình Chữ Nhật", "rectangle"),
+                  ("Hình Tam Giác", "triangle"),
+                  ("Hình Vuông", "square")]
+        for vietnamese, english in shapes:
+            print(vietnamese.lower())  # Kiểm tra có tồn tại trong chuỗi không
+            if vietnamese.lower() in text.lower():
+                shape_in_text= english  # Trả về loại hình bằng tiếng Anh
+        res=None
+        if shape_in_text==shape:
+            return True
+        else: return False
 
     #Hàm này sẽ phân tích ngữ nghĩa bài toán để trích xuất thông tin cần thiết.
     def parse_problem_semantics(self, problem_text, shape):
@@ -134,40 +155,94 @@ class GeometrySolverFrame(tk.Frame):
             - Hướng dẫn về màu sắc.
             - Các giá trị cho trước (số, đơn vị).
         """
-        semantic_data = {
-            "entities": [],
-            "dimensions": {},
-            "color_instructions": {},
-            "given_values": {}
-        }
+        semantic_data = {}
 
-        problem_text = problem_text.lower()
+        problem_text = re.sub(r'\b(bằng)\b', '=', problem_text.lower(), flags=re.IGNORECASE)
+        problem_text = re.sub(r'\s+', ' ', problem_text).strip()
 
         numbers = re.findall(r'\d+(?:\.\d+)?', problem_text)
         
-        units = re.findall(r'(cm|m|km|mm)', problem_text)
-        color_instructions = self.extract_color_instructions(problem_text)
-        semantic_data["color_instructions"] = color_instructions
+        is_shape=self.validate_shape_in_text(problem_text,shape)
+        if is_shape==False:
+            messagebox.showwarning("Cảnh báo", "Vui lòng nhập bài toán đúng với hình đã chọn")
+            return
+        # color_instructions = self.extract_color_instructions(problem_text)
+        # semantic_data["color_instructions"] = color_instructions
 
-        if shape == "rectangle":
-            semantic_data["entities"] = ["hình chữ nhật", "chiều dài", "chiều rộng"]
-            dimensions = self.extract_dimensions(problem_text, ["dài", "rộng"])
-            semantic_data["dimensions"] = dimensions
+        if shape == "triangle" or shape == "rectangle" or shape == "square":
+            given_part = ""
+            calculate_part = ""
 
-        elif shape == "triangle":
-            semantic_data["entities"] = ["hình tam giác", "cạnh a", "cạnh b", "cạnh c"]
-            dimensions = self.extract_dimensions(problem_text, ["a", "b", "c"])
-            semantic_data["dimensions"] = dimensions
+            if "cho" in problem_text:
+                given_part = problem_text.split("cho", 1)[1].strip()
+                if "tính" in given_part:
+                    given_part, calculate_part = given_part.split("tính", 1)
 
-        elif shape == "square":
-            semantic_data["entities"] = ["hình vuông", "cạnh"]
-            dimensions = self.extract_dimensions(problem_text, ["a"])
-            semantic_data["dimensions"] = dimensions
+            # Hàm trích xuất các thông tin đã biết
+            def extract_given_info(text, shape):
+                known_factors = {}
+                patterns = {}
 
-        semantic_data["given_values"]["numbers"] = numbers
-        semantic_data["given_values"]["units"] = units
+                # Mẫu nhận diện theo từng loại hình học
+                if shape == "square":
+                    patterns = {
+                        "cạnh": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                        "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                    }
+                elif shape == "triangle":
+                    patterns = {
+                        "a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                        "b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                        "c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                        "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                    }
+                elif shape == "rectangle":
+                    patterns = {
+                        "chiều dài": r"chiều dài\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "chiều rộng": r"chiều rộng\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                        "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                    }
+
+
+
+                # Áp dụng các biểu thức regex
+                for key, pattern in patterns.items():
+                    match = re.search(pattern, text)
+                    if match:
+                        known_factors[key] = match.group(1)
+                return known_factors
+
+            # Hàm trích xuất các yêu cầu cần tính
+            def extract_calculations(text):
+                calculations = []
+                if shape == "square":
+                    keywords = ["cạnh", "chu vi", "diện tích", "đường chéo"]
+                elif shape == "triangle":
+                    keywords = ["cạnh a", "cạnh b", "cạnh c", "chu vi", "diện tích", "đường cao"]
+                elif shape == "rectangle":
+                    keywords = ["chiều dài", "chiều rộng", "chu vi", "diện tích", "đường chéo"]
+
+                for keyword in keywords:
+                    if keyword in text:
+                        calculations.append(keyword)
+                return calculations
+
+            # Xử lý thông tin
+            known_factors = extract_given_info(given_part,shape)
+            calculations = extract_calculations(calculate_part)
+            semantic_data["shape"]=shape
+            semantic_data["known_factors"]= known_factors
+            semantic_data["calculations"]= calculations
+
 
         return semantic_data
+    
     def extract_color_instructions(self, problem_text):
         """_summary_
 
@@ -236,13 +311,15 @@ class GeometrySolverFrame(tk.Frame):
                 problem_data = json.load(f)
 
             shape = problem_data.get('shape')
+            problem_text = problem_data.get('problem_text')
             if shape:
                 self.shape_var.set(shape)
-                self.draw_shape(shape, problem_data)
+                self.draw_shape(shape, problem_text)
 
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể đọc file: {e}") 
-        # Hàm thiết lập giao diện minh họa hình học
+
+    # Hàm thiết lập giao diện minh họa hình học
     def setup_visualization(self):
 
         visual_frame = tk.LabelFrame(self.right_panel, text="Hình ảnh minh họa",
@@ -252,6 +329,7 @@ class GeometrySolverFrame(tk.Frame):
         self.canvas = tk.Canvas(visual_frame, width=400, height=300,
                                 bg="white", highlightthickness=1)
         self.canvas.pack(pady=10, padx=10)
+
     # Hàm thiết lập giao diện hiển thị các bước giải
     def setup_calculation_display(self):
         calc_frame = tk.LabelFrame(self.left_panel, text="Các bước giải",
@@ -261,6 +339,7 @@ class GeometrySolverFrame(tk.Frame):
         self.calc_text = scrolledtext.ScrolledText(calc_frame, height=10,
                                                    font=("Arial", 11))
         self.calc_text.pack(pady=10, padx=10, fill="both", expand=True)
+
     # Hàm thiết lập giao diện ghi chú
     def setup_note(self):
         #Tạo khung chứa ghi chú về các yếu tố của hình học (như công thức, khái niệm, v.v.).
@@ -328,6 +407,7 @@ class GeometrySolverFrame(tk.Frame):
                                     "6. Tính đường chéo: d = a√2\n")
                                     
             self.chat_display.config(state=tk.DISABLED)
+
     def draw_shape(self, shape, problem_text=None):
         """_summary_
 
