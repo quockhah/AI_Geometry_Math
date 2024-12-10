@@ -38,7 +38,7 @@ class Square:
         area (float): Area of the square.
         perimeter (float): Perimeter of the square.
     """
-    def __init__(self, **kwargs):
+    def __init__(self,semantic_data):
         """
         Initialize a square with optional parameters.
 
@@ -48,10 +48,39 @@ class Square:
             area (float, optional): Area of the square.
             perimeter (float, optional): Perimeter of the square.
         """
-        self.side_length_a = kwargs.get('side', None)  # Square side length
-        self.diagonal = kwargs.get('diagonal', None)  # Diagonal
-        self.area = kwargs.get('area', None)  # Area
-        self.perimeter = kwargs.get('perimeter', None)  # Perimeter
+        if semantic_data:
+            # Trích xuất thông tin phân tích ngữ nghĩa
+            analysis = semantic_data.get('semantic_analysis', {})
+            shape = analysis.get('shape', None)
+            known_factors = analysis.get('known_factors', {})
+            self.requested_calculations = analysis.get('calculations', [])
+
+
+            vietnamese_mapping = {
+                    'cạnh': 'side_length_a',
+                    'đường chéo': 'diagonal',
+                    'diện tích': 'area',
+                    'chu vi': 'perimeter'
+                }
+
+            # Khởi tạo các giá trị mặc định
+            self.side_length_a = None
+            self.diagonal = None
+            self.area = None
+            self.perimeter = None
+
+                # Gán lại giá trị từ semantic data nếu tồn tại
+            for key, value in known_factors.items():
+                attribute = vietnamese_mapping.get(key)
+                if attribute:
+                    try:
+                        # Loại bỏ đơn vị và chuyển đổi giá trị
+                        setattr(self, attribute, float(value.replace("cm", "").replace("cm²", "").strip()))
+                    except ValueError:
+                        raise ValueError(f"Không thể phân tích giá trị cho {key}: {value}")
+        else:
+            return
+
 
         # Store solution steps and used formulas
         self.steps = []
@@ -155,7 +184,7 @@ class Square:
         ):
             raise ValueError("Giá trị chu vi không phù hợp với độ dài cạnh theo công thức P = 4a")
 
-    def solve(self) -> Dict[str, float]:
+    def solve(self):
         """
         Automatically calculate unknown values based on input values.
 
@@ -242,35 +271,5 @@ class Square:
                 
                 solution += f"=> {var} = {val:.2f} cm\n"
             
-            solution += "\n"
-        
+            solution += "\n"       
         return solution
-
-
-if __name__ == "__main__":
-    # Test cases
-    try:
-        # Case 1: Invalid data
-        print("Trường hợp 1: Dữ liệu không hợp lệ (đường chéo = 13 không hợp lệ với độ dài cạnh = 5)")
-        square_invalid = Square(side=5, diagonal=13)  # Invalid diagonal value
-        results_invalid = square_invalid.solve()
-        print("Kết quả hình vuông (không hợp lệ):")
-        print(results_invalid)
-        print("\nLời giải hình vuông (không hợp lệ):")
-        print(square_invalid.get_solution_steps())
-
-    except ValueError as e:
-        print("Lỗi:", e)
-
-    try:
-        # Case 2: Valid data
-        print("\nTrường hợp 2: Dữ liệu hợp lệ (độ dài cạnh = 5)")
-        square_valid = Square(diagonal=5)  # Valid Data
-        results_valid = square_valid.solve()
-        print("Kết quả hình vuông (hợp lệ):")
-        print(results_valid)
-        print("\nLời giải hình vuông (hợp lệ):")
-        print(square_valid.get_solution_steps())
-
-    except ValueError as e:
-        print("Lỗi:", e)

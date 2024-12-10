@@ -1,15 +1,15 @@
 {
-    "problem_text": "cho hình chữ nhật có đường chéo bằng 110cm, chu vi bằng 52220cm, tính diện tích",
+    "problem_text": "Cho hình chữ nhật có đường chéo bằng 5, chiều rộng bằng 3. Tính chiều dài",
     "shape": "rectangle",
     "semantic_analysis": {
         "shape": "rectangle",
         "known_factors": {
-            "chu vi": "52220cm",
-            "đường chéo": "110cm"
+            "chiều rộng": "3",
+            "đường chéo": "5"
         },
         "calculations": [
-            "diện tích"
+            "chiều dài"
         ]
     },
-    "timestamp": "2024-12-08 19:32:12"
+    "timestamp": "2024-12-10 23:08:15"
 }

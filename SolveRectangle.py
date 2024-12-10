@@ -39,7 +39,7 @@ class Rectangle:
         area (float): Area of the rectangle.
         perimeter (float): Perimeter of the rectangle.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, semantic_data):
         """
         Initialize a rectangle with optional parameters.
 
@@ -50,11 +50,41 @@ class Rectangle:
             area (float, optional): Area of the rectangle.
             perimeter (float, optional): Perimeter of the rectangle.
         """
-        self.side_length_a = kwargs.get('length', None)  # Rectangle length
-        self.side_width_b = kwargs.get('width', None)  # Rectangle width
-        self.diagonal = kwargs.get('diagonal', None)  # Diagonal
-        self.area = kwargs.get('area', None)  # Area
-        self.perimeter = kwargs.get('perimeter', None)  # Perimeter
+
+        if semantic_data:
+            # Trích xuất thông tin phân tích ngữ nghĩa
+            analysis = semantic_data.get('semantic_analysis', {})
+            shape = analysis.get('shape', None)
+            known_factors = analysis.get('known_factors', {})
+            self.requested_calculations = analysis.get('calculations', [])
+
+
+            vietnamese_mapping = {
+                    'chiều dài': 'side_length_a',
+                    'chiều rộng':'side_width_b',
+                    'đường chéo': 'diagonal',
+                    'diện tích': 'area',
+                    'chu vi': 'perimeter'
+                }
+
+            # Khởi tạo các giá trị mặc định
+            self.side_length_a = None
+            self.side_width_b=None
+            self.diagonal = None
+            self.area = None
+            self.perimeter = None
+
+                # Gán lại giá trị từ semantic data nếu tồn tại
+            for key, value in known_factors.items():
+                attribute = vietnamese_mapping.get(key)
+                if attribute:
+                    try:
+                        # Loại bỏ đơn vị và chuyển đổi giá trị
+                        setattr(self, attribute, float(value.replace("cm", "").replace("cm²", "").strip()))
+                    except ValueError:
+                        raise ValueError(f"Không thể phân tích giá trị cho {key}: {value}")
+        else:
+            return
 
         # Store solution steps and used formulas
         self.steps = []
@@ -70,13 +100,13 @@ class Rectangle:
                 explanation="Tính diện tích hình chữ nhật: S = a * b (Biết chiều dài và chiều rộng)"
             ),
             GeometryFormula(
-                inputs=['area'],
+                inputs=['area','side_width_b'],
                 output='side_length_a',
                 formula=lambda area, side_width_b: area / side_width_b,
                 explanation="Tính chiều dài từ diện tích và chiều rộng: a = S / b"
             ),
             GeometryFormula(
-                inputs=['area'],
+                inputs=['area','side_length_a'],
                 output='side_width_b',
                 formula=lambda area, side_length_a: area / side_length_a,
                 explanation="Tính chiều rộng từ diện tích và chiều dài: b = S / a"
@@ -84,19 +114,19 @@ class Rectangle:
 
             # Chu vi (Perimeter)
             GeometryFormula(
-                inputs=['side_length_a', 'side_width_b'],
+                inputs=['side_length_a','side_width_b'],
                 output='perimeter',
                 formula=lambda side_length_a, side_width_b: 2 * (side_length_a + side_width_b),
                 explanation="Tính chu vi hình chữ nhật: P = 2(a + b) (Biết chiều dài và chiều rộng)"
             ),
             GeometryFormula(
-                inputs=['perimeter'],
+                inputs=['perimeter','side_width_b'],
                 output='side_length_a',
                 formula=lambda perimeter, side_width_b: (perimeter / 2) - side_width_b,
                 explanation="Tính chiều dài từ chu vi và chiều rộng: a = (P / 2) - b"
             ),
             GeometryFormula(
-                inputs=['perimeter'],
+                inputs=['perimeter','side_length_a'],
                 output='side_width_b',
                 formula=lambda perimeter, side_length_a: (perimeter / 2) - side_length_a,
                 explanation="Tính chiều rộng từ chu vi và chiều dài: b = (P / 2) - a"
@@ -285,31 +315,3 @@ class Rectangle:
             solution += "\n"
         
         return solution
-
-
-if __name__ == "__main__":
-    try:
-        # Case 1: Invalid data
-        print("Trường hợp 1: Dữ liệu không hợp lệ (đường chéo = 13 không hợp lệ với chiều dài = 5 và chiều rộng = 4)")
-        rectangle_invalid = Rectangle(length=5, width=4, diagonal=13)  # Invalid diagonal value
-        results_invalid = rectangle_invalid.solve()
-        print("Kết quả hình chữ nhật (không hợp lệ):")
-        print(results_invalid)
-        print("\nLời giải hình chữ nhật (không hợp lệ):")
-        print(rectangle_invalid.get_solution_steps())
-
-    except ValueError as e:
-        print("Lỗi:", e)
-
-    try:
-        # Case 1: Valid data
-        print("\nTrường hợp 2: Dữ liệu hợp lệ (chiều dài = 5, chiều rộng = 4)")
-        rectangle_valid = Rectangle(length=5, width=4)  # Valid Data
-        results_valid = rectangle_valid.solve()
-        print("Kết quả hình chữ nhật (hợp lệ):")
-        print(results_valid)
-        print("\nLời giải hình chữ nhật (hợp lệ):")
-        print(rectangle_valid.get_solution_steps())
-
-    except ValueError as e:
-        print("Lỗi:", e)

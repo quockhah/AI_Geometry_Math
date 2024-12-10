@@ -5,6 +5,8 @@ import json
 import os
 from datetime import datetime
 import re
+from SolveSquare import *
+from SolveRectangle import *
 class GeometrySolverFrame(tk.Frame):
     def __init__(self, parent, controller):
         """_summary_
@@ -114,17 +116,30 @@ class GeometrySolverFrame(tk.Frame):
             semantic_analysis = problem_data.get("semantic_analysis", {})
             known_factors = semantic_analysis.get("known_factors", {})
             calculations = semantic_analysis.get("calculations", [])
+            shape_cal=problem_data.get('shape')
 
             known_factors_str = ", ".join(f"{key}={value}" for key, value in known_factors.items())
             calculations_str = ", ".join(calculations)
+            solution=None
 
+            if shape_cal=="square":
+                square=Square(problem_data)
+                square.solve()
+                solution=square.get_solution_steps()
+            elif shape_cal=="rectangle":
+                rectangle=Rectangle(problem_data)
+                rectangle.solve()
+                solution=rectangle.get_solution_steps()
             self.calc_text.insert(tk.END, f"Các yếu tố đã biết: {known_factors_str}\n")
             self.calc_text.insert(tk.END, f"Yêu cầu: tính {calculations_str}\n")
+            self.calc_text.insert(tk.END, f"Giải \n: {solution}")
+
      
             self.load_and_update_visualization()
-        
+        except TypeError as e:
+            messagebox.showerror("Lỗi", f"Không đủ dữ liệu để tính toán")
         except Exception as e:
-            messagebox.showerror("Lỗi", f"Không thể lưu bài toán: {e}")
+            messagebox.showerror("Lỗi", f"{e}")
 
     def validate_shape_in_text(self,text,shape):
         shapes = [("Hình Chữ Nhật", "rectangle"),
@@ -186,7 +201,7 @@ class GeometrySolverFrame(tk.Frame):
                 # Mẫu nhận diện theo từng loại hình học
                 if shape == "square":
                     patterns = {
-                        "cạnh": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                        "side": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                         "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                         "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
                         "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
