@@ -102,7 +102,7 @@ class GeometrySolverFrame(tk.Frame):
         }
         os.makedirs("problem_data", exist_ok=True)
 
-        filename = f"problem_data.json"
+        filename = f"problem_data/problem_data.json"
 
         try:
             with open(filename, 'w', encoding='utf-8') as f:
@@ -146,7 +146,6 @@ class GeometrySolverFrame(tk.Frame):
                   ("Hình Tam Giác", "triangle"),
                   ("Hình Vuông", "square")]
         for vietnamese, english in shapes:
-            print(vietnamese.lower())  # Kiểm tra có tồn tại trong chuỗi không
             if vietnamese.lower() in text.lower():
                 shape_in_text= english  # Trả về loại hình bằng tiếng Anh
         res=None
@@ -156,24 +155,78 @@ class GeometrySolverFrame(tk.Frame):
 
     #Hàm này sẽ phân tích ngữ nghĩa bài toán để trích xuất thông tin cần thiết.
     def parse_problem_semantics(self, problem_text, shape):
-        """_summary_
-            --Phân tích ngữ nghĩa bài toán để trích xuất thông tin cần thiết.
+        """
+        Analyze the semantics of a geometry problem to extract essential information.
+
         Arguments:
-            problem_text -- _description_ -- nội dung bài toán.
-            shape -- _description_ -- loại hình học (hình vuông, tam giác, chữ nhật).
+            problem_text -- The content of the problem, provided as a string.
+            shape -- The type of geometric shape (e.g., square, triangle, rectangle).
 
         Returns:
-            _description_ 
-            semantic_data -- dữ liệu ngữ nghĩa, bao gồm:
-            - Các thực thể liên quan.
-            - Thông tin kích thước.
-            - Hướng dẫn về màu sắc.
-            - Các giá trị cho trước (số, đơn vị).
+            semantic_data -- A dictionary containing extracted semantic information, including:
+                - Related entities.
+                - Dimensional information.
+                - Color instructions (if applicable).
+                - Given values (e.g., numbers with units).
         """
-        semantic_data = {}
+        def data_preprocessing(text):
+            text = re.sub(r'\b(bằng)\b', '=', text.lower(), flags=re.IGNORECASE)
+            text = re.sub(r'\b(là)\b', '=', text.lower(), flags=re.IGNORECASE)
+            text = re.sub(r'\s+', ' ', text).strip()
+            return text
+        
+        # Hàm trích xuất các thông tin đã biết
+        def extract_given_info(text, shape):
+            known_factors = {}
+            patterns = {}
+            # Mẫu nhận diện theo từng loại hình học
+            if shape == "square":
+                patterns = {
+                    "side": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                    "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                }
+            elif shape == "triangle":
+                patterns = {
+                    "a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                    "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                }
+            elif shape == "rectangle":
+                patterns = {
+                    "chiều dài": r"chiều dài\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "chiều rộng": r"chiều rộng\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
+                    "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                }
+            # Áp dụng các biểu thức regex
+            for key, pattern in patterns.items():
+                match = re.search(pattern, text)
+                if match:
+                    known_factors[key] = match.group(1)
+            return known_factors
 
-        problem_text = re.sub(r'\b(bằng)\b', '=', problem_text.lower(), flags=re.IGNORECASE)
-        problem_text = re.sub(r'\s+', ' ', problem_text).strip()
+        # Hàm trích xuất các yêu cầu cần tính
+        def extract_calculations(text):
+            calculations = []
+            if shape == "square":
+                keywords = ["cạnh", "chu vi", "diện tích", "đường chéo"]
+            elif shape == "triangle":
+                keywords = ["cạnh a", "cạnh b", "cạnh c", "chu vi", "diện tích", "đường cao"]
+            elif shape == "rectangle":
+                keywords = ["chiều dài", "chiều rộng", "chu vi", "diện tích", "đường chéo"]
+            for keyword in keywords:
+                if keyword in text:
+                    calculations.append(keyword)
+            return calculations
+
+        semantic_data = {}
+        problem_text=data_preprocessing(problem_text)
 
         numbers = re.findall(r'\d+(?:\.\d+)?', problem_text)
         
@@ -193,60 +246,11 @@ class GeometrySolverFrame(tk.Frame):
                 if "tính" in given_part:
                     given_part, calculate_part = given_part.split("tính", 1)
 
-            # Hàm trích xuất các thông tin đã biết
-            def extract_given_info(text, shape):
-                known_factors = {}
-                patterns = {}
+            
+            
 
-                # Mẫu nhận diện theo từng loại hình học
-                if shape == "square":
-                    patterns = {
-                        "side": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
-                        "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
-                    }
-                elif shape == "triangle":
-                    patterns = {
-                        "a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                        "b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                        "c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
-                        "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
-                    }
-                elif shape == "rectangle":
-                    patterns = {
-                        "chiều dài": r"chiều dài\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "chiều rộng": r"chiều rộng\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                        "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
-                        "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
-                    }
-
-
-
-                # Áp dụng các biểu thức regex
-                for key, pattern in patterns.items():
-                    match = re.search(pattern, text)
-                    if match:
-                        known_factors[key] = match.group(1)
-                return known_factors
-
-            # Hàm trích xuất các yêu cầu cần tính
-            def extract_calculations(text):
-                calculations = []
-                if shape == "square":
-                    keywords = ["cạnh", "chu vi", "diện tích", "đường chéo"]
-                elif shape == "triangle":
-                    keywords = ["cạnh a", "cạnh b", "cạnh c", "chu vi", "diện tích", "đường cao"]
-                elif shape == "rectangle":
-                    keywords = ["chiều dài", "chiều rộng", "chu vi", "diện tích", "đường chéo"]
-
-                for keyword in keywords:
-                    if keyword in text:
-                        calculations.append(keyword)
-                return calculations
+           
+            
 
             # Xử lý thông tin
             known_factors = extract_given_info(given_part,shape)
