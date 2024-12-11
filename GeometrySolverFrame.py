@@ -143,8 +143,8 @@ class GeometrySolverFrame(tk.Frame):
 
     def validate_shape_in_text(self,text,shape):
         shape_in_text=None
-        shapes = [("Hình Chữ Nhật", "rectangle"),
-                  ("Hình Tam Giác", "triangle"),
+        shapes = [("Chữ Nhật", "rectangle"),
+                  ("Tam Giác", "triangle"),
                   ("Hình Vuông", "square")]
         for vietnamese, english in shapes:
             if vietnamese.lower() in text.lower():
