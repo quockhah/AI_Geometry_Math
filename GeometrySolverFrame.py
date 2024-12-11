@@ -142,6 +142,7 @@ class GeometrySolverFrame(tk.Frame):
             messagebox.showerror("Lỗi", f"{e}")
 
     def validate_shape_in_text(self,text,shape):
+        shape_in_text=None
         shapes = [("Hình Chữ Nhật", "rectangle"),
                   ("Hình Tam Giác", "triangle"),
                   ("Hình Vuông", "square")]
