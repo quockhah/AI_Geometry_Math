@@ -480,12 +480,12 @@ class GeometrySolverFrame(tk.Frame):
         elif shape == "triangle":
             self.canvas.create_polygon(200, 50, 50, 250, 350, 250, outline=default_line_color, fill=default_triangle_color, width=2)
             side_a_color = "red" if "cạnh a" in problem_text or "a="  in problem_text else default_line_color
-            side_b_color = "red" if "cạnh b" in problem_text or "b=" in problem_text or "b" in problem_text else default_line_color
+            side_b_color = "red" if "cạnh b" in problem_text or "b=" in problem_text else default_line_color
             side_c_color = "red" if "cạnh c" in problem_text or "c=" in problem_text else default_line_color
             side_Hc_color = "red" if "chiều cao" in problem_text or "hc="  in problem_text else default_line_color
-            angle_alpha_color = "red" if "góc alpha" in problem_text else default_fill_color
-            angle_beta_color = "red" if "góc beta" in problem_text else default_fill_color
-            angle_delta_color = "red" if "góc delta" in problem_text else default_fill_color
+            angle_alpha_color = "red" if "góc alpha" in problem_text or "góc a" in problem_text else default_fill_color
+            angle_beta_color = "red" if "góc beta" in problem_text or "góc b" in problem_text else default_fill_color
+            angle_delta_color = "red" if "góc delta" in problem_text or "góc c" in problem_text else default_fill_color
 
             self.canvas.create_text(120, 140, text="a", font=("Arial", 12, "bold"), fill=side_a_color)
             self.canvas.create_text(280, 140, text="b", font=("Arial", 12, "bold"), fill=side_b_color)
