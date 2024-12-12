@@ -7,6 +7,7 @@ from datetime import datetime
 import re
 from SolveSquare import *
 from SolveRectangle import *
+from SolveTriangle import *
 class GeometrySolverFrame(tk.Frame):
     def __init__(self, parent, controller):
         """_summary_
@@ -130,6 +131,10 @@ class GeometrySolverFrame(tk.Frame):
                 rectangle=Rectangle(problem_data)
                 rectangle.solve()
                 solution=rectangle.get_solution_steps()
+            elif shape_cal=="triangle":
+                triangle=Triangle(problem_data)
+                triangle.solve()
+                solution=triangle.get_solution_steps()
             self.calc_text.insert(tk.END, f"Các yếu tố đã biết: {known_factors_str}\n")
             self.calc_text.insert(tk.END, f"Yêu cầu: tính {calculations_str}\n")
             self.calc_text.insert(tk.END, f"Giải \n: {solution}")
@@ -143,9 +148,9 @@ class GeometrySolverFrame(tk.Frame):
 
     def validate_shape_in_text(self,text,shape):
         shape_in_text=None
-        shapes = [("Chữ Nhật", "rectangle"),
-                  ("Tam Giác", "triangle"),
-                  ("Hình Vuông", "square")]
+        shapes = [("chữ Nhật", "rectangle"),
+                  ("tam Giác", "triangle"),
+                  ("hình Vuông", "square")]
         for vietnamese, english in shapes:
             if vietnamese.lower() in text.lower():
                 shape_in_text= english  # Trả về loại hình bằng tiếng Anh
@@ -170,9 +175,15 @@ class GeometrySolverFrame(tk.Frame):
                 - Color instructions (if applicable).
                 - Given values (e.g., numbers with units).
         """
-        def data_preprocessing(text):
+        def data_preprocessing(text,shape):
+            text = re.sub(r'\b(chiều dài)\b', 'dài', text.lower(), flags=re.IGNORECASE)
+            text = re.sub(r'\b(chiều rộng)\b', 'rộng', text.lower(), flags=re.IGNORECASE)
             text = re.sub(r'\b(bằng)\b', '=', text.lower(), flags=re.IGNORECASE)
             text = re.sub(r'\b(là)\b', '=', text.lower(), flags=re.IGNORECASE)
+            if shape=="triangle":
+                text = re.sub(r'\b(dài)\b', '=', text.lower(), flags=re.IGNORECASE)
+                return text
+            text = re.sub(r"cạnh\s+[a-zA-Z]+\s*=", "cạnh=", text)
             text = re.sub(r'\s+', ' ', text).strip()
             return text
         
@@ -190,9 +201,9 @@ class GeometrySolverFrame(tk.Frame):
                 }
             elif shape == "triangle":
                 patterns = {
-                    "a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                    "b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                    "c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
                     "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
                     "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
@@ -227,9 +238,9 @@ class GeometrySolverFrame(tk.Frame):
             return calculations
 
         semantic_data = {}
-        problem_text=data_preprocessing(problem_text)
+        problem_text=data_preprocessing(problem_text,shape)
 
-        numbers = re.findall(r'\d+(?:\.\d+)?', problem_text)
+        # numbers = re.findall(r'\d+(?:\.\d+)?', problem_text)
         
         is_shape=self.validate_shape_in_text(problem_text,shape)
         if is_shape==False:
@@ -242,16 +253,17 @@ class GeometrySolverFrame(tk.Frame):
             given_part = ""
             calculate_part = ""
 
-            if "cho" in problem_text:
-                given_part = problem_text.split("cho", 1)[1].strip()
-                if "tính" in given_part:
-                    given_part, calculate_part = given_part.split("tính", 1)
-
-            
-            
-
-           
-            
+            start_word=None
+            if "cho" in problem_text: 
+                start_word="cho"
+            if "biết" in problem_text: 
+                start_word="biết"
+            if "có" in problem_text: 
+                start_word="có"
+      
+            given_part = problem_text.split(start_word, 1)[1].strip()
+            if "tính" in given_part:
+                given_part, calculate_part = given_part.split("tính", 1)
 
             # Xử lý thông tin
             known_factors = extract_given_info(given_part,shape)
