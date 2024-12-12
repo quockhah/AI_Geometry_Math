@@ -135,6 +135,9 @@ class GeometrySolverFrame(tk.Frame):
                 triangle=Triangle(problem_data)
                 triangle.solve()
                 solution=triangle.get_solution_steps()
+            
+            if solution=="Lời giải chi tiết:\n\n":
+                solution="Không đủ dữ liệu để tính toán"
             self.calc_text.insert(tk.END, f"Các yếu tố đã biết: {known_factors_str}\n")
             self.calc_text.insert(tk.END, f"Yêu cầu: tính {calculations_str}\n")
             self.calc_text.insert(tk.END, f"Giải \n: {solution}")
@@ -204,9 +207,17 @@ class GeometrySolverFrame(tk.Frame):
                     "cạnh a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
                     "cạnh b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
                     "cạnh c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "alpha": r"alpha\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
+                    "beta": r"beta\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
+                    "delta": r"delta\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
                     "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
-                    "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
+                    "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "đường cao b": r"đường cao b\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "đường cao c": r"đường cao c\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "bán kính đường tròn ngoại tiếp": r"bán kính đường tròn ngoại tiếp\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "bán kính đường tròn nội tiếp": r"bán kính đường tròn nội tiếp\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "nửa chu vi": r"nửa chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
                 }
             elif shape == "rectangle":
                 patterns = {
