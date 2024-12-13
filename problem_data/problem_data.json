@@ -1,16 +1,15 @@
 {
-    "problem_text": "Cho hình chữ nhật có chiều dài là 8cm chiều rộng là 5cm. Tính chu vi và diện tích",
+    "problem_text": "cho hình chữ nhật có chiều dài là 3 và chiều rộng là 2. tính diện tích hình chữ nhật",
     "shape": "rectangle",
     "semantic_analysis": {
         "shape": "rectangle",
         "known_factors": {
-            "dài": "8cm ",
-            "rộng": "5cm"
+            "dài": "3 ",
+            "rộng": "2"
         },
         "calculations": [
-            "chu vi",
             "diện tích"
         ]
     },
-    "timestamp": "2024-12-13 11:59:34"
+    "timestamp": "2024-12-13 15:05:04"
 }

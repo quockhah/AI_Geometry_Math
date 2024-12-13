@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 import re
+import unicodedata
 from SolveSquare import *
 from SolveRectangle import *
 from SolveTriangle import *
@@ -90,6 +91,7 @@ class GeometrySolverFrame(tk.Frame):
             messagebox.showwarning("Cảnh báo", "Vui lòng nhập bài toán!")
             return
 
+        problem_text= unicodedata.normalize('NFC', problem_text).lower()
         semantic_data = self.parse_problem_semantics(problem_text, shape)
         if semantic_data is None:
             return
@@ -151,13 +153,13 @@ class GeometrySolverFrame(tk.Frame):
 
     def validate_shape_in_text(self,text,shape):
         shape_in_text=None
-        shapes = [("chữ Nhật", "rectangle"),
-                  ("tam Giác", "triangle"),
-                  ("hình Vuông", "square")]
+        shapes = [("chữ nhật", "rectangle"),
+                  ("tam giác", "triangle"),
+                  ("hình vuông", "square")]
         for vietnamese, english in shapes:
-            if vietnamese.lower() in text.lower():
+            format_shape=unicodedata.normalize('NFC', vietnamese).lower()
+            if format_shape in text:
                 shape_in_text= english  # Trả về loại hình bằng tiếng Anh
-        res=None
         if shape_in_text==shape:
             return True
         else: return False
@@ -204,9 +206,9 @@ class GeometrySolverFrame(tk.Frame):
                 }
             elif shape == "triangle":
                 patterns = {
-                    "cạnh a": r"cạnh a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                    "cạnh b": r"cạnh b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
-                    "cạnh c": r"cạnh c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh a": r"a\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh b": r"b\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh c": r"c\s*=\s*([a-zA-Z0-9+\-*/]+\s*(cm|m|mm|km)?)",
                     "alpha": r"alpha\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
                     "beta": r"beta\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
                     "delta": r"delta\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
@@ -263,18 +265,23 @@ class GeometrySolverFrame(tk.Frame):
         if shape == "triangle" or shape == "rectangle" or shape == "square":
             given_part = ""
             calculate_part = ""
-
+            start_wordlist=["cho","biết","có"]
+            cal_wordlist=["tính","tìm"]
+            
             start_word=None
-            if "cho" in problem_text: 
-                start_word="cho"
-            if "biết" in problem_text: 
-                start_word="biết"
-            if "có" in problem_text: 
-                start_word="có"
-      
+            cal_word=None
+            for i in start_wordlist:
+                if i in problem_text:
+                    start_word=i
+                    break
+            for i in cal_wordlist:
+                if i in problem_text:
+                    cal_word=i
+                    break
+
             given_part = problem_text.split(start_word, 1)[1].strip()
-            if "tính" in given_part:
-                given_part, calculate_part = given_part.split("tính", 1)
+            if cal_word in given_part:
+                given_part, calculate_part = given_part.split(cal_word, 1)
 
             # Xử lý thông tin
             known_factors = extract_given_info(given_part,shape)
