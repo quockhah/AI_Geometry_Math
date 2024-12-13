@@ -221,8 +221,8 @@ class GeometrySolverFrame(tk.Frame):
                 }
             elif shape == "rectangle":
                 patterns = {
-                    "chiều dài": r"chiều dài\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                    "chiều rộng": r"chiều rộng\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "dài": r"dài\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "rộng": r"rộng\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
                     "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"

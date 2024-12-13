@@ -60,8 +60,8 @@ class Rectangle:
 
 
             vietnamese_mapping = {
-                    'chiều dài': 'side_length_a',
-                    'chiều rộng':'side_width_b',
+                    'dài': 'side_length_a',
+                    'rộng':'side_width_b',
                     'đường chéo': 'diagonal',
                     'diện tích': 'area',
                     'chu vi': 'perimeter'
