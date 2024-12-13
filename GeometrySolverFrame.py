@@ -236,9 +236,9 @@ class GeometrySolverFrame(tk.Frame):
                     "delta": r"delta\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(°|rad)?)",
                     "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
-                    "đường cao": r"đường cao\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                    "đường cao b": r"đường cao b\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
-                    "đường cao c": r"đường cao c\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "đường cao ha": r"đường cao a\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "đường cao hb": r"đường cao b\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "đường cao hc": r"đường cao c\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "bán kính đường tròn ngoại tiếp": r"bán kính đường tròn ngoại tiếp\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "bán kính đường tròn nội tiếp": r"bán kính đường tròn nội tiếp\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "nửa chu vi": r"nửa chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"

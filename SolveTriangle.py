@@ -441,7 +441,7 @@ class Triangle:
         """
         solution = "Lời giải chi tiết:\n\n"      
         for i, step in enumerate(self.steps, 1):
-            solution += f"Bước {i}:\n"
+            solution += f"Thực hiện:\n"
             solution += f"Công thức: {step['formula']}\n"
             solution += "Thay số:\n"
             
@@ -464,11 +464,11 @@ class Triangle:
                 elif var == "inradius":
                     var = "bán kính nội tiếp"
                 elif var == "height_a":
-                    var = "chiều cao a"
+                    var = "đường cao a"
                 elif var == "height_b":
-                    var = "chiều cao b"
+                    var = "đường cao b"
                 elif var == "height_c":
-                    var = "chiều cao c"
+                    var = "đường cao c"
                 elif var == "alpha":
                     var = "góc α"
                 elif var == "beta":
@@ -497,11 +497,11 @@ class Triangle:
                 elif var == "inradius":
                     var = "bán kính nội tiếp"
                 elif var == "height_a":
-                    var = "chiều cao a"
+                    var = "dường cao a"
                 elif var == "height_b":
-                    var = "chiều cao b"
+                    var = "đường cao b"
                 elif var == "height_c":
-                    var = "chiều cao c"
+                    var = "đường cao c"
                 elif var == "alpha":
                     var = "góc α"
                 elif var == "beta":
