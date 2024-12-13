@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import ttk, messagebox, scrolledtext,filedialog
 from MainMenuFrame import *
 import json
 import os
@@ -81,6 +81,26 @@ class GeometrySolverFrame(tk.Frame):
         analyze_btn = tk.Button(input_frame, text="Giải bài toán",command=self.save_problem_to_json,font=("Arial", 11, "bold"),bg="#4CAF50", fg="white")
         analyze_btn.pack(pady=10)
 
+        clear_btn = tk.Button(input_frame, text="Xóa bài toán", command=self.clear_problem_text, font=("Arial", 11, "bold"), bg="#f44336", fg="white")
+        clear_btn.pack(pady=10, side="left", padx=(5, 10))
+
+        open_file_btn = tk.Button(input_frame, text="Mở file", command=self.open_file, font=("Arial", 11, "bold"), bg="#2196F3", fg="white")
+        open_file_btn.pack(side="left", padx=(5, 10))  # Đặt ở cạnh bên phải ô nhập bài toán
+
+
+    def clear_problem_text(self):
+        self.problem_text.delete(1.0, tk.END)
+        self.calc_text.delete(1.0, tk.END)
+
+    def open_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.json"), ("All Files", "*.*")])
+        if file_path:
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                content = data.get("problem_text","")
+                self.problem_text.delete(1.0, tk.END)  # Xóa nội dung cũ
+                self.problem_text.insert(tk.END, content)  # Thêm nội dung từ file
+
     #Lưu nội dung bài toán vào tệp JSON để xử lý và hiển thị lại khi cần
     def save_problem_to_json(self):
 
@@ -105,7 +125,7 @@ class GeometrySolverFrame(tk.Frame):
         }
         os.makedirs("problem_data", exist_ok=True)
 
-        filename = f"problem_data/problem_data.json"
+        filename = f"problem_data/{shape}_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
         try:
             with open(filename, 'w', encoding='utf-8') as f:
@@ -183,10 +203,12 @@ class GeometrySolverFrame(tk.Frame):
         def data_preprocessing(text,shape):
             text = re.sub(r'\b(chiều dài)\b', 'dài', text.lower(), flags=re.IGNORECASE)
             text = re.sub(r'\b(chiều rộng)\b', 'rộng', text.lower(), flags=re.IGNORECASE)
+            text = re.sub(r'\b(dài)\b', '=', text.lower(), flags=re.IGNORECASE)
             text = re.sub(r'\b(bằng)\b', '=', text.lower(), flags=re.IGNORECASE)
             text = re.sub(r'\b(là)\b', '=', text.lower(), flags=re.IGNORECASE)
             if shape=="triangle":
                 text = re.sub(r'\b(dài)\b', '=', text.lower(), flags=re.IGNORECASE)
+                text = re.sub(r'\b(chiều cao)\b', 'đường cao', text.lower(), flags=re.IGNORECASE)
                 return text
             text = re.sub(r"cạnh\s+[a-zA-Z]+\s*=", "cạnh=", text)
             text = re.sub(r'\s+', ' ', text).strip()
@@ -199,7 +221,7 @@ class GeometrySolverFrame(tk.Frame):
             # Mẫu nhận diện theo từng loại hình học
             if shape == "square":
                 patterns = {
-                    "side": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
+                    "cạnh": r"cạnh\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "chu vi": r"chu vi\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)",
                     "diện tích": r"diện tích\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm²|m²|mm²|km²)?)",
                     "đường chéo": r"đường chéo\s*=\s*([a-zA-Z0-9=+\-*/]+\s*(cm|m|mm|km)?)"
@@ -242,7 +264,7 @@ class GeometrySolverFrame(tk.Frame):
             if shape == "square":
                 keywords = ["cạnh", "chu vi", "diện tích", "đường chéo"]
             elif shape == "triangle":
-                keywords = ["cạnh a", "cạnh b", "cạnh c", "chu vi", "diện tích", "đường cao"]
+                keywords = ["cạnh a", "cạnh b", "cạnh c", "chu vi", "diện tích", "đường cao",]
             elif shape == "rectangle":
                 keywords = ["chiều dài", "chiều rộng", "chu vi", "diện tích", "đường chéo"]
             for keyword in keywords:
@@ -262,33 +284,30 @@ class GeometrySolverFrame(tk.Frame):
         # color_instructions = self.extract_color_instructions(problem_text)
         # semantic_data["color_instructions"] = color_instructions
 
-        if shape == "triangle" or shape == "rectangle" or shape == "square":
-            given_part = ""
-            calculate_part = ""
-            start_wordlist=["cho","biết","có"]
-            cal_wordlist=["tính","tìm"]
-            
-            start_word=None
-            cal_word=None
-            for i in start_wordlist:
-                if i in problem_text:
-                    start_word=i
-                    break
-            for i in cal_wordlist:
-                if i in problem_text:
-                    cal_word=i
-                    break
-
-            given_part = problem_text.split(start_word, 1)[1].strip()
-            if cal_word in given_part:
-                given_part, calculate_part = given_part.split(cal_word, 1)
-
-            # Xử lý thông tin
-            known_factors = extract_given_info(given_part,shape)
-            calculations = extract_calculations(calculate_part)
-            semantic_data["shape"]=shape
-            semantic_data["known_factors"]= known_factors
-            semantic_data["calculations"]= calculations
+        given_part = ""
+        calculate_part = ""
+        start_wordlist=["cho","biết","có"]
+        cal_wordlist=["tính","tìm"]
+        
+        start_word=None
+        cal_word=None
+        for i in start_wordlist:
+            if i in problem_text:
+                start_word=i
+                break
+        for i in cal_wordlist:
+            if i in problem_text:
+                cal_word=i
+                break
+        given_part = problem_text.split(start_word, 1)[1].strip()
+        if cal_word in given_part:
+            given_part, calculate_part = given_part.split(cal_word, 1)
+        # Xử lý thông tin
+        known_factors = extract_given_info(given_part,shape)
+        calculations = extract_calculations(calculate_part)
+        semantic_data["shape"]=shape
+        semantic_data["known_factors"]= known_factors
+        semantic_data["calculations"]= calculations
 
 
         return semantic_data

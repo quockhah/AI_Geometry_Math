@@ -278,7 +278,7 @@ class Rectangle:
         """
         solution = "Lời giải chi tiết:\n\n"
         for i, step in enumerate(self.steps, 1):
-            solution += f"Bước {i}:\n"
+            solution += f"Thực hiện:\n"
             solution += f"Công thức: {step['formula']}\n"
             solution += "Thay số:\n"
             

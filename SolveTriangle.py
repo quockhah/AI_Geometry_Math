@@ -453,8 +453,8 @@ class Triangle:
                     var = "độ dài cạnh b"
                 elif var == "side_length_c":
                     var = "độ dài cạnh c"
-                elif var == "diagonal":
-                    var = "đường chéo"
+                elif var == "semi_perimeter":
+                    var = "nửa chu vi"
                 elif var == "area":
                     var = "diện tích"
                 elif var == "perimeter":
@@ -473,8 +473,8 @@ class Triangle:
                     var = "góc α"
                 elif var == "beta":
                     var = "góc β"
-                elif var == "gamma":
-                    var = "góc γ"
+                elif var == "delta":
+                    var = "góc delta"
                 
                 solution += f"{var} = {val:.2f} cm\n"
             
@@ -486,8 +486,8 @@ class Triangle:
                     var = "độ dài cạnh b"
                 elif var == "side_length_c":
                     var = "độ dài cạnh c"
-                elif var == "diagonal":
-                    var = "đường chéo"
+                elif var == "semi_perimeter":
+                    var = "nửa chu vi"
                 elif var == "area":
                     var = "diện tích"
                 elif var == "perimeter":
